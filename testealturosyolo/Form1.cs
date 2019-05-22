@@ -35,6 +35,20 @@ namespace testealturosyolo
         double tamanhoquadrado = 0;
         Graphics graphmap;
 
+        //---
+        //variaveis de posicionamento do drone
+        double zoomcalculo = 0;
+        double latitude = 0;
+        double longitude = 0;
+
+        double droneX = 262;
+        double droneY = 254;
+
+        double dronelatitude = 0;
+        double dronelongitude = 0;
+        double dronealtura = 0;
+        double dronerotacao = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -257,6 +271,21 @@ namespace testealturosyolo
                 string s = File.ReadAllText(@"localcord.txt");
                 List<string> ss = s.Split('/').ToList();
                 zoom = Convert.ToDouble(ss[2]);
+                zoomcalculo = zoom;
+                latitude = Convert.ToDouble(ss[0]);
+                //18
+                //1.391992254E-03
+                //19
+                //6.983899971E-04
+                //20
+                //3.503914119E-04
+                longitude = Convert.ToDouble(ss[1]);
+                //18
+                //1.657605171E-03
+                //19
+                //8.261203767E-04
+                //20
+                //4.144012929E-04
             }
             double a = zoom * zoom;
             a = a * -5;
@@ -265,15 +294,157 @@ namespace testealturosyolo
             tamanhoquadrado = c;
         }
 
+        public void posicionadrone(double lat,double longi, double altura,double rotacao)
+        {
+            dronelatitude = lat;
+            dronelongitude = longi;
+            dronealtura = altura;
+            dronerotacao = rotacao;
+
+            double a = latitude - (dronelatitude);
+            double b = longitude - (dronelongitude);
+            if (zoomcalculo == 20)
+            {
+                if (b > 0)
+                {
+                    double calculo = (4.144012929E-04 * 100000000) / (b* 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
+                    
+                }
+                else if(b<0)
+                {
+                    double calculo = (-4.144012929E-04 * 100000000) / (b * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                    
+                }
+                else if (b == 0)
+                {
+                    droneX = pictureBox3.Width / 2;
+                }
+
+                if (a > 0)
+                {
+                    double calculo = (3.503914119E-04 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+                    
+                }
+                else if (a < 0)
+                {
+                    double calculo = (-3.503914119E-04 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+                    
+                }
+                else if (a == 0)
+                {
+                    droneY = pictureBox3.Height / 2;
+                }
+            }
+            else if(zoomcalculo == 19)
+            {
+                if (b > 0)
+                {
+                    double calculo = (8.261203767E-04 * 100000000) / (b * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    
+                    droneX = (pictureBox3.Width / 2) - (deltacalculo*(pictureBox3.Width / 2));
+                    int ava = 0;
+                }
+                else if (b < 0)
+                {
+                    double calculo = (-8.261203767E-04 * 100000000) / (b * 100000000);
+                    double deltacalculo = 1 / calculo;
+
+                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                    int ava = 0;
+                }
+                else if (b == 0)
+                {
+                    droneX = pictureBox3.Width / 2;
+                }
+
+
+                if (a > 0)
+                {
+                    double calculo = (6.983899971E-04 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+
+                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+                    int ava = 0;
+                }
+                else if (a < 0)
+                {
+                    double calculo = (-6.983899971E-04 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+
+                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+                    int ava = 0;
+                }
+                else if (a == 0)
+                {
+                    droneY = pictureBox3.Height / 2;
+                }
+            }
+            else if (zoomcalculo == 18)
+            {
+                if (b > 0)
+                {
+                    double calculo = (1.657605171E-03 * 100000000) / (b * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
+                    
+                }
+                else if (b < 0)
+                {
+                    double calculo = (-1.657605171E-03 * 100000000) / (b * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                   
+                }
+                else if (b == 0)
+                {
+                    droneX = pictureBox3.Width / 2;
+                }
+
+
+                if (a > 0)
+                {
+                    double calculo = (1.391992254E-03 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+
+                }
+                else if (a < 0)
+                {
+                    double calculo = (-1.391992254E-03 * 100000000) / (a * 100000000);
+                    double deltacalculo = 1 / calculo;
+                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+
+                }
+                else if (a == 0)
+                {
+                    droneY = pictureBox3.Height / 2;
+                }
+            }
+        }
+
         private void timer1_Tick_1(object sender, EventArgs e)
         {
-
+            
             graphmap.FillRectangle(Brushes.Transparent, 0, 0, 1000, 1000);
             graphmap.DrawImage(new Bitmap(@"imgmapa.png"), 0, 0, pictureBox3.Width, pictureBox3.Height);
             graphmap.DrawRectangle(new Pen(Brushes.Black,2), (float)Convert.ToDouble(pictureBox3.Width / 2) - (float)tamanhoquadrado/2, (float)Convert.ToDouble(pictureBox3.Height / 2) - ((float)tamanhoquadrado / 2)-20, (float)tamanhoquadrado,(float)tamanhoquadrado);
             Brush bru = new SolidBrush(Color.FromArgb(132, 0, 183, 21));
             graphmap.FillRectangle(bru, (float)Convert.ToDouble(pictureBox3.Width / 2) - (float)tamanhoquadrado / 2, (float)Convert.ToDouble(pictureBox3.Height / 2) - ((float)tamanhoquadrado / 2) - 20, (float)tamanhoquadrado, (float)tamanhoquadrado);
-            graphmap.DrawImage(testealturosyolo.Properties.Resources.imgdronecima, pictureBox3.Width / 2-20, pictureBox3.Height / 2-20, 40, 40);
+            graphmap.DrawImage(testealturosyolo.Properties.Resources.imgdronecima, (float)droneX-20, (float)droneY-20, 40, 40);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            new Formalteralocaliza(this).ShowDialog();
         }
     }
 }
