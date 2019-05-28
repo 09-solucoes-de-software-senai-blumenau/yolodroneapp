@@ -14,14 +14,19 @@ using DarrenLee.Media;
 using System.Threading;
 using GMap;
 using GMap.NET.MapProviders;
+using System.Drawing.Drawing2D;
+using System.Diagnostics;
+using Emgu.CV;
+using Emgu.CV.Structure;
 
 namespace testealturosyolo
 {
     public partial class Form1 : Form
     {
         Color corquadrado = Color.Red;
-        Camera c;
         DateTime inicio;
+        
+        
         int numpessoas = 0;
         bool startou = false;
         int np = 0;
@@ -32,7 +37,7 @@ namespace testealturosyolo
 
         //---
 
-        double tamanhoquadrado = 0;
+        
         Graphics graphmap;
 
         //---
@@ -49,54 +54,164 @@ namespace testealturosyolo
         double dronealtura = 0;
         double dronerotacao = 0;
 
+        int quantidadepick = 0;
+
+        //video -------------
+        double totalframe;
+        public static double fps;
+        int frame;
+        VideoCapture capture;
+        Bitmap imagemvideo = new Bitmap(100,100);
+
+        //analise com thread----
+        List<detectado> detectadolist = new List<detectado>();
+        public static List<Bitmap> listaframes = new List<Bitmap>();
+        
+
         public Form1()
         {
             InitializeComponent();
-            try
+
+            //Process p = Process.GetProcessesByName("testealturosyolo").First();
+            //if ( true)
+            //{
+            //    MessageBox.Show("aplicativo já aberto!!");
+            //    Environment.Exit(0);
+            //}
+            List<Process> p = Process.GetProcesses().Where(x => x.ProcessName == "videospliter").ToList();
+            foreach (var item in p)
             {
-                c = new Camera();
-                getinfo();
-                c.OnFrameArrived += C_OnFrameArrived;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("nenhuma camera disponivel!");
+                item.Kill();
             }
             
-        }
-
-        private void getinfo()
-        {
-            var cdv = c.GetCameraSources();
-            var cresolu = c.GetSupportedResolutions();
-            dataGridView1.DataSource = cdv.ToList();
-            dataGridView2.DataSource = cresolu.ToList();
-        }
-
-        private void C_OnFrameArrived(object source, FrameArrivedEventArgs e)
-        {
-            pictureBox2.Image = e.GetFrame();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            if (Directory.Exists("ger"))
+            {
+                string[] s = Directory.GetFiles("ger");
+                if (s.ToList().Count() > 0)
+                {
+                    foreach (var item in s.ToList())
+                    {
+                        File.Delete(item);
+                    }
+                }
+                Directory.Delete("ger");
+            }
+            if (Directory.Exists("imgdetected"))
+            {
+                string[] s = Directory.GetFiles("imgdetected");
+                if (s.ToList().Count() > 0)
+                {
+                    foreach (var item in s.ToList())
+                    {
+                        File.Delete(item);
+                    }
+                }
+                Directory.Delete("imgdetected");
+            }
+            if (Directory.Exists("data"))
+            {
+                string[] s = Directory.GetFiles("data");
+                if (s.ToList().Count() > 0)
+                {
+                    foreach (var item in s.ToList())
+                    {
+                        File.Delete(item);
+                    }
+                }
+                Directory.Delete("data");
+            }
+            Directory.CreateDirectory("imgtemp");
+            Directory.CreateDirectory("ger");
+            Directory.CreateDirectory("imgdetected");
+            Directory.CreateDirectory("data");
             OpenFileDialog of = new OpenFileDialog();
-            of.Filter = "png|*.png|jpg|*.jpg";
             if (of.ShowDialog() == DialogResult.OK)
             {
-                pictureBox2.Image = new Bitmap(of.FileName);
+                //List<string> pathsfiles = new List<string>();
+                //try
+                //{
+                //    pathsfiles = Directory.GetFiles("C:\\Users\\Administrador\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\Y2ZHAK3M\\").ToList();
+                //}
+                //catch (Exception)
+                //{
+                //    pathsfiles = Directory.GetFiles("C:\\Users\\Administrador\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\FNXD0NZ6\\").ToList();
+                //}
+                //pathsfiles = pathsfiles.Where(x => x.Contains(".png") || x.Contains(".jpg")).ToList();
+
+                //pictureBox2.Image = new Bitmap(pathsfiles[0]);
+                if(of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
+                {
+                    pictureBox2.Image = new Bitmap(of.FileName);
+                }
+                else
+                {
+                    capture = new VideoCapture(of.FileName);
+                    Mat m = new Mat();
+                    capture.Read(m);
+                    imagemvideo = m.Bitmap;
+                    totalframe = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameCount);
+                    fps = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Fps);
+                    //Thread video = new Thread(playvideo);
+                    //video.Start();
+                    //timer3.Enabled = true;
+                    
+                    
+                    Mat ma = new Mat();
+                    double b = 29;
+                    if (fps > 40)
+                    {
+                        b = 59;
+                    }
+                    
+                        while (frame < totalframe-b)
+                        {
+                            if (fps > 40)
+                            {
+                                frame +=59;
+                            }
+                            else
+                            {
+                                frame += 29;
+                            }
+                            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.PosFrames, frame);
+                            capture.Read(ma);
+                            Thread.Sleep(1);
+                            //listaframes.Add(ma.Bitmap);
+                            ma.Bitmap.Save($@"imgtemp/img{quantidadepick+1}.png");
+                        quantidadepick++;   
+                        }
+
+                    new Formtelaprocessamento(listaframes, fps, quantidadepick, corquadrado).ShowDialog();
+
+
+                }
+                if (!startou && of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
+                {
+                    Thread t = new Thread(analisaimg);
+                    t.Start();
+                    startou = true;
+                    timer2.Enabled = true;
+                }
             }
-            if (!startou)
+            
+        }
+        void playvideo()
+        {
+            Mat m = new Mat();
+            while(frame< totalframe)
             {
-                Thread t = new Thread(analisaimg);
-                t.Start();
-                startou = true;
-                timer2.Enabled = true;
+                frame++;
+                capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.PosFrames, frame);
+                capture.Read(m);
+                imagemvideo = m.Bitmap;
+                Thread.Sleep(100);
             }
         }
-
-        private void button2_Click(object sender, EventArgs e)
+            private void button2_Click(object sender, EventArgs e)
         {
             ColorDialog c = new ColorDialog();
             if(c.ShowDialog() == DialogResult.OK)
@@ -110,113 +225,122 @@ namespace testealturosyolo
         {
 
         }
+
+        
+
+
         void analisaimg()
         {
             do
             {
-                // timer1.Enabled = false;
-                numpessoas = 0;
-
-                double total = 0;
-
-                inicio = DateTime.Now;
-                var ms = new MemoryStream();
-                Bitmap b = new Bitmap(pictureBox2.Image);
-
-                b.Save(ms, ImageFormat.Jpeg);
-
-
-                var configurationDetector = new ConfigurationDetector();
-                var config = configurationDetector.Detect();
-
-                using (var yoloWrapper = new YoloWrapper(config))
+                try
                 {
-                    var items = yoloWrapper.Detect(ms.ToArray());
-                    //items[0].Type -> "Person, Car, ..."
-                    //items[0].Confidence -> 0.0 (low) -> 1.0 (high)
-                    //items[0].X -> bounding box
-                    //items[0].Y -> bounding box
-                    //items[0].Width -> bounding box
-                    //items[0].Height -> bounding box
-                    Pen p = new Pen(Brushes.Red, 20);
+                    // timer1.Enabled = false;
+                    numpessoas = 0;
 
-                    foreach (var item in items.Where(x => x.Type.ToLower() == "person"))
+                    double total = 0;
+
+                    inicio = DateTime.Now;
+                    var ms = new MemoryStream();
+                    Bitmap b = new Bitmap(pictureBox2.Image);
+
+                    b.Save(ms, ImageFormat.Jpeg);
+
+
+                    var configurationDetector = new ConfigurationDetector();
+                    var config = configurationDetector.Detect();
+
+                    using (var yoloWrapper = new YoloWrapper(config))
                     {
+                        var items = yoloWrapper.Detect(ms.ToArray());
+                        //items[0].Type -> "Person, Car, ..."
+                        //items[0].Confidence -> 0.0 (low) -> 1.0 (high)
+                        //items[0].X -> bounding box
+                        //items[0].Y -> bounding box
+                        //items[0].Width -> bounding box
+                        //items[0].Height -> bounding box
+                        Pen p = new Pen(Brushes.Red, 20);
 
-
-                        total += item.Confidence;
-                        //desenha quadrado
-                        numpessoas++;
-                        for (int i2 = 0; i2 < 5; i2++)
+                        foreach (var item in items.Where(x => x.Type.ToLower() == "person"))
                         {
-                            for (int i = 0; i < item.Width; i++)
+
+
+                            total += item.Confidence;
+                            //desenha quadrado
+                            numpessoas++;
+                            for (int i2 = 0; i2 < 5; i2++)
                             {
-                                try
+                                for (int i = 0; i < item.Width; i++)
                                 {
-                                    b.SetPixel(item.X + i, item.Y + i2, corquadrado);
+                                    try
+                                    {
+                                        b.SetPixel(item.X + i, item.Y + i2, corquadrado);
+                                    }
+                                    catch (Exception)
+                                    { }
                                 }
-                                catch (Exception)
-                                { }
                             }
-                        }
-                        for (int i2 = 0; i2 < 5; i2++)
-                        {
-                            for (int i = 0; i < item.Width + 5; i++)
+                            for (int i2 = 0; i2 < 5; i2++)
                             {
-                                try
+                                for (int i = 0; i < item.Width + 5; i++)
                                 {
-                                    b.SetPixel(item.X + i, item.Y + i2 + item.Height, corquadrado);
+                                    try
+                                    {
+                                        b.SetPixel(item.X + i, item.Y + i2 + item.Height, corquadrado);
+                                    }
+                                    catch (Exception)
+                                    { }
                                 }
-                                catch (Exception)
-                                { }
                             }
-                        }
-                        for (int i2 = 0; i2 < 5; i2++)
-                        {
-                            for (int i = 0; i < item.Height; i++)
+                            for (int i2 = 0; i2 < 5; i2++)
                             {
-                                try
+                                for (int i = 0; i < item.Height; i++)
                                 {
-                                    b.SetPixel(item.X + i2, item.Y + i, corquadrado);
+                                    try
+                                    {
+                                        b.SetPixel(item.X + i2, item.Y + i, corquadrado);
+                                    }
+                                    catch (Exception)
+                                    { }
                                 }
-                                catch (Exception)
-                                { }
                             }
-                        }
-                        for (int i2 = 0; i2 < 5; i2++)
-                        {
-                            for (int i = 0; i < item.Height; i++)
+                            for (int i2 = 0; i2 < 5; i2++)
                             {
-                                try
+                                for (int i = 0; i < item.Height; i++)
                                 {
-                                    b.SetPixel(item.X + i2 + item.Width, item.Y + i, corquadrado);
+                                    try
+                                    {
+                                        b.SetPixel(item.X + i2 + item.Width, item.Y + i, corquadrado);
+                                    }
+                                    catch (Exception)
+                                    { }
                                 }
-                                catch (Exception)
-                                { }
                             }
-                        }
 
 
 
+                        }
+                        double a = 0;
+                        a = total / Convert.ToDouble(numpessoas);
+                        a = Math.Round(a, 4);
+                        a = a * 100;
+                        np = numpessoas;
+                        media = a;
+
+                        img = b;
+                        //pictureBox1.Image = b;
+                        //label2.Text = $"media %: {a}";
+                        //label1.Text = $"n° pessoas: {numpessoas}";
                     }
-                    double a = 0;
-                    a = total / Convert.ToDouble(numpessoas);
-                    a = Math.Round(a, 4);
-                    a = a * 100;
-                    np = numpessoas;
-                    media = a;
 
-                    img = b;
-                    //pictureBox1.Image = b;
-                    //label2.Text = $"media %: {a}";
-                    //label1.Text = $"n° pessoas: {numpessoas}";
+                    DateTime tempoagora = DateTime.Now;
+                    TimeSpan ts = tempoagora - inicio;
+                    miliseconds = Math.Truncate(ts.TotalMilliseconds);
+                    //label6.Text = $"tempo processamento(ms): {Math.Truncate(ts.TotalMilliseconds)}";
+                    //timer1.Enabled = true;
                 }
-
-                DateTime tempoagora = DateTime.Now;
-                TimeSpan ts = tempoagora - inicio;
-                miliseconds = Math.Truncate(ts.TotalMilliseconds);
-                //label6.Text = $"tempo processamento(ms): {Math.Truncate(ts.TotalMilliseconds)}";
-                //timer1.Enabled = true;
+                catch (Exception)
+                {}
                 
             } while (true);
 
@@ -287,11 +411,7 @@ namespace testealturosyolo
                 //20
                 //4.144012929E-04
             }
-            double a = zoom * zoom;
-            a = a * -5;
-            double b = zoom * 205;
-            double c = a + b - 2010;
-            tamanhoquadrado = c;
+            
         }
 
         public void posicionadrone(double lat,double longi, double altura,double rotacao)
@@ -351,7 +471,7 @@ namespace testealturosyolo
                     double deltacalculo = 1 / calculo;
                     
                     droneX = (pictureBox3.Width / 2) - (deltacalculo*(pictureBox3.Width / 2));
-                    int ava = 0;
+                    
                 }
                 else if (b < 0)
                 {
@@ -359,7 +479,7 @@ namespace testealturosyolo
                     double deltacalculo = 1 / calculo;
 
                     droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
-                    int ava = 0;
+                    
                 }
                 else if (b == 0)
                 {
@@ -373,7 +493,7 @@ namespace testealturosyolo
                     double deltacalculo = 1 / calculo;
 
                     droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
-                    int ava = 0;
+                    
                 }
                 else if (a < 0)
                 {
@@ -381,7 +501,7 @@ namespace testealturosyolo
                     double deltacalculo = 1 / calculo;
 
                     droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
-                    int ava = 0;
+                    
                 }
                 else if (a == 0)
                 {
@@ -431,20 +551,47 @@ namespace testealturosyolo
             }
         }
 
+        private Bitmap RotateImage(Bitmap b, float angle)
+        {
+            //Create a new empty bitmap to hold rotated image.
+            Bitmap returnBitmap = new Bitmap(b.Width, b.Height);
+            //Make a graphics object from the empty bitmap.
+            Graphics g = Graphics.FromImage(returnBitmap);
+            //move rotation point to center of image.
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.TranslateTransform((float)b.Width / 2, (float)b.Height / 2);
+            //Rotate.        
+            g.RotateTransform(angle);
+            //Move image back.
+            g.TranslateTransform(-(float)b.Width / 2, -(float)b.Height / 2);
+            //Draw passed in image onto graphics object.
+            g.DrawImage(b, new Point(0, 0));
+            return returnBitmap;
+        }
         private void timer1_Tick_1(object sender, EventArgs e)
         {
-            
+           
             graphmap.FillRectangle(Brushes.Transparent, 0, 0, 1000, 1000);
             graphmap.DrawImage(new Bitmap(@"imgmapa.png"), 0, 0, pictureBox3.Width, pictureBox3.Height);
-            graphmap.DrawRectangle(new Pen(Brushes.Black,2), (float)Convert.ToDouble(pictureBox3.Width / 2) - (float)tamanhoquadrado/2, (float)Convert.ToDouble(pictureBox3.Height / 2) - ((float)tamanhoquadrado / 2)-20, (float)tamanhoquadrado,(float)tamanhoquadrado);
-            Brush bru = new SolidBrush(Color.FromArgb(132, 0, 183, 21));
-            graphmap.FillRectangle(bru, (float)Convert.ToDouble(pictureBox3.Width / 2) - (float)tamanhoquadrado / 2, (float)Convert.ToDouble(pictureBox3.Height / 2) - ((float)tamanhoquadrado / 2) - 20, (float)tamanhoquadrado, (float)tamanhoquadrado);
-            graphmap.DrawImage(testealturosyolo.Properties.Resources.imgdronecima, (float)droneX-20, (float)droneY-20, 40, 40);
+
+            graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.quadradocamera, (float)dronerotacao), (float)droneX - 60, (float)droneY - 80, 120, 160);
+            
+            graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.imgdronecima,(float)dronerotacao), (float)droneX-20, (float)droneY-20, 40, 40);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             new Formalteralocaliza(this).ShowDialog();
+        }
+
+        private void timer3_Tick(object sender, EventArgs e)
+        {
+            pictureBox2.Image = imagemvideo;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            new Formexiberesult().Show();
         }
     }
 }

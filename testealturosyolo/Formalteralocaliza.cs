@@ -112,7 +112,7 @@ namespace testealturosyolo
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ff.posicionadrone(gMapControl1.Position.Lat, gMapControl1.Position.Lng, 10, 90);
+            ff.posicionadrone(gMapControl1.Position.Lat, gMapControl1.Position.Lng, 10, 25);
             Hide();
             Close();
         }
