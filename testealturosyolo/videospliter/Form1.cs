@@ -17,77 +17,66 @@ namespace videospliter
         List<detectado> detectadolist = new List<detectado>();
         private Color corquadrado = Color.Red;
         int idinstancia = 0;
-        string pathgeral = @"C:\Users\Administrador\Desktop\FAGUNDES\projetosc#\REPOSITORIOS\yolodroneapp\testealturosyolo\bin\Debug";
-        
+        string pathgeral = @"";
+        string[] quantdiv;
+
+
         public Form1()
         {
             InitializeComponent();
+            
+            string ss = Path.GetFullPath(Directory.GetFiles("x64").First());
+            string[] corte = ss.Split('\\');
+            string pathcriando = "";
+            foreach (var item in corte)
+            {
+                if (!item.Equals("testealturosyolo"))
+                {
+                    pathcriando += item + "\\";
+                }
+                else
+                {
+
+                    pathcriando += @"testealturosyolo\bin\Debug";
+                    break;
+                }
+            }
+            pathgeral = pathcriando;
+            quantdiv = Directory.GetFiles(pathgeral + @"/imgtemp");
             string[] s = Directory.GetFiles(pathgeral+@"/ger");
             idinstancia = s.ToList().Count();
             FileStream f = File.Create(pathgeral + $@"/ger/instancia{s.ToList().Count()+1}gerfile.txt");
             f.Close();
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            int d = Convert.ToInt32(Math.Round(Convert.ToDouble(quantdiv.ToList().Count()) / 30));
             int ultimoindex = -1;
-            int index = idinstancia * 4;
+            int index = idinstancia * d;
             index++;
-            try
+            for (int i = 0; i < d; i++)
             {
-                analisaframe(index);
-            }
-            catch (Exception)
-            {}
-            if (detectadolist.Count()>0)
-            {
-                if (ultimoindex != detectadolist.Count() - 1)
+                try
                 {
-                    exportaresult(detectadolist.Count() - 1);
-                    ultimoindex = detectadolist.Count() - 1;
+                    analisaframe(index + i);
                 }
-            }
-            try
-            {
-                analisaframe(index + 1);
-            }
-            catch (Exception)
-            {}
-            if (detectadolist.Count()>0)
-            {
-                if (ultimoindex != detectadolist.Count() - 1)
+                catch (Exception)
+                { }
+                try
                 {
-                    exportaresult(detectadolist.Count() - 1);
-                    ultimoindex = detectadolist.Count() - 1;
+                    if (detectadolist.Count() > 0)
+                    {
+                        if (ultimoindex != detectadolist.Count() - 1)
+                        {
+                            exportaresult(detectadolist.Count() - 1);
+                            ultimoindex = detectadolist.Count() - 1;
+                        }
+                    }
                 }
-            }
-            try
-            {
-                analisaframe(index + 2);
-            }
-            catch (Exception)
-            { }
-            if (detectadolist.Count() > 0)
-            {
-                if (ultimoindex != detectadolist.Count() - 1)
-                {
-                    exportaresult(detectadolist.Count() - 1);
-                    ultimoindex = detectadolist.Count() - 1;
-                }
-            }
-            try
-            {
-                analisaframe(index + 3);
-            }
-            catch (Exception)
-            { }
-            if (detectadolist.Count() > 0)
-            {
-                if (ultimoindex != detectadolist.Count() - 1)
-                {
-                    exportaresult(detectadolist.Count() - 1);
-                    ultimoindex = detectadolist.Count() - 1;
-                }
+                catch (Exception)
+                {}
             }
 
             Hide();

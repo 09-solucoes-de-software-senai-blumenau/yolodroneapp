@@ -39,13 +39,10 @@ namespace testealturosyolo
 
         private void Formtelaprocessamento_Load(object sender, EventArgs e)
         {
-            d = totalframe / 4;
             timer1.Enabled = true;
-            for (int i = 0; i < Convert.ToInt32(Math.Round(d)); i++)
+            for (int i = 0; i < 31; i++)
             {
-                
-                    Process.Start(@"C:\Users\Administrador\Desktop\FAGUNDES\projetosc#\REPOSITORIOS\yolodroneapp\testealturosyolo\videospliter\bin\Debug\videospliter.exe");
-                
+                Process.Start(@"..\..\videospliter\bin\Debug\videospliter.exe");   
             }
         }
 
@@ -74,6 +71,7 @@ namespace testealturosyolo
             string[] s = Directory.GetFiles("data");
             if (s.ToList().Count()>1)
             {
+                timer1.Enabled = false;
                 Hide();
                 new Formexiberesult().Show();
                 Close();

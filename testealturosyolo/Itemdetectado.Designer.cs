@@ -40,6 +40,7 @@
             this.label1.Size = new System.Drawing.Size(58, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "pessoas: 0";
+            this.label1.Click += new System.EventHandler(this.Itemdetectado_Click);
             // 
             // label2
             // 
@@ -49,6 +50,7 @@
             this.label2.Size = new System.Drawing.Size(69, 13);
             this.label2.TabIndex = 1;
             this.label2.Text = "tempo: 00:00";
+            this.label2.Click += new System.EventHandler(this.Itemdetectado_Click);
             // 
             // Itemdetectado
             // 
@@ -61,6 +63,7 @@
             this.Name = "Itemdetectado";
             this.Size = new System.Drawing.Size(117, 57);
             this.Load += new System.EventHandler(this.Itemdetectado_Load);
+            this.Click += new System.EventHandler(this.Itemdetectado_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -13,6 +13,7 @@ namespace testealturosyolo
     public partial class Itemdetectado : UserControl
     {
         Formexiberesult ff;
+        int framed = 0;
         public Itemdetectado(detectado d, Formexiberesult f)
         {
             InitializeComponent();
@@ -20,6 +21,7 @@ namespace testealturosyolo
             label1.Text = $"pessoas: {d.quantpessoas}";
             int segundos = 0;
             int minutos = 0;
+            framed = d.frame;
             if (d.frame > 60)
             {
                 minutos = Convert.ToInt32(Math.Truncate(Convert.ToDouble(d.frame) / 60));
@@ -32,9 +34,15 @@ namespace testealturosyolo
             label2.Text = $"tempo: {minutos}:{segundos}";
         }
 
+       
         private void Itemdetectado_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void Itemdetectado_Click(object sender, EventArgs e)
+        {
+            ff.clicoudeteccao(framed-1);
         }
     }
 }

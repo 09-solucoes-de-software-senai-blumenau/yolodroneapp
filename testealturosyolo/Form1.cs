@@ -88,6 +88,9 @@ namespace testealturosyolo
 
         private void button1_Click(object sender, EventArgs e)
         {
+            timer1.Enabled = false;
+            timer2.Enabled = false;
+            timer3.Enabled = false;
             if (Directory.Exists("ger"))
             {
                 string[] s = Directory.GetFiles("ger");
@@ -124,6 +127,18 @@ namespace testealturosyolo
                 }
                 Directory.Delete("data");
             }
+            if (Directory.Exists("imgtemp"))
+            {
+                string[] s = Directory.GetFiles("imgtemp");
+                if (s.ToList().Count() > 0)
+                {
+                    foreach (var item in s.ToList())
+                    {
+                        File.Delete(item);
+                    }
+                }
+                Directory.Delete("imgtemp");
+            }
             Directory.CreateDirectory("imgtemp");
             Directory.CreateDirectory("ger");
             Directory.CreateDirectory("imgdetected");
@@ -131,6 +146,11 @@ namespace testealturosyolo
             OpenFileDialog of = new OpenFileDialog();
             if (of.ShowDialog() == DialogResult.OK)
             {
+                
+                Directory.CreateDirectory("imgtemp");
+                Directory.CreateDirectory("ger");
+                Directory.CreateDirectory("imgdetected");
+                Directory.CreateDirectory("data");
                 //List<string> pathsfiles = new List<string>();
                 //try
                 //{
@@ -143,7 +163,7 @@ namespace testealturosyolo
                 //pathsfiles = pathsfiles.Where(x => x.Contains(".png") || x.Contains(".jpg")).ToList();
 
                 //pictureBox2.Image = new Bitmap(pathsfiles[0]);
-                if(of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
+                if (of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
                 {
                     pictureBox2.Image = new Bitmap(of.FileName);
                 }
@@ -372,8 +392,8 @@ namespace testealturosyolo
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             
+
             graphmap = pictureBox3.CreateGraphics();
             calculatamanhoquadrado();
             timer1.Enabled = true;
@@ -592,6 +612,15 @@ namespace testealturosyolo
         private void button5_Click(object sender, EventArgs e)
         {
             new Formexiberesult().Show();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            List<Process> p = Process.GetProcesses().Where(x => x.ProcessName == "videospliter").ToList();
+            foreach (var item in p)
+            {
+                item.Kill();
+            }
         }
     }
 }
