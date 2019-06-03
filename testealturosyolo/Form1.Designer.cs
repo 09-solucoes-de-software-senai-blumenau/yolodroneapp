@@ -47,11 +47,13 @@
             this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -59,6 +61,7 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.pictureBox4);
             this.panel1.Controls.Add(this.button5);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
@@ -72,7 +75,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(20, 175);
+            this.button5.Location = new System.Drawing.Point(23, 323);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(95, 33);
             this.button5.TabIndex = 5;
@@ -83,7 +86,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 132);
+            this.label2.Location = new System.Drawing.Point(27, 280);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 4;
@@ -92,7 +95,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 108);
+            this.label1.Location = new System.Drawing.Point(27, 256);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 3;
@@ -100,7 +103,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(27, 56);
+            this.button2.Location = new System.Drawing.Point(30, 204);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(40, 33);
             this.button2.TabIndex = 2;
@@ -112,14 +115,14 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.Red;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Location = new System.Drawing.Point(73, 56);
+            this.panel2.Location = new System.Drawing.Point(76, 204);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(26, 33);
             this.panel2.TabIndex = 1;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(27, 11);
+            this.button1.Location = new System.Drawing.Point(30, 159);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(72, 39);
             this.button1.TabIndex = 0;
@@ -224,6 +227,16 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::testealturosyolo.Properties.Resources.imglocotemp;
+            this.pictureBox4.Location = new System.Drawing.Point(-19, -9);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(170, 162);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox4.TabIndex = 9;
+            this.pictureBox4.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -249,6 +262,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -274,6 +288,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Timer timer3;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.PictureBox pictureBox4;
     }
 }
 
