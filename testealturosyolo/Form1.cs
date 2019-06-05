@@ -66,7 +66,9 @@ namespace testealturosyolo
         //analise com thread----
         List<detectado> detectadolist = new List<detectado>();
         public static List<Bitmap> listaframes = new List<Bitmap>();
-        
+
+        //telemetry
+        List<string> rawtelemetrydata = new List<string>();
 
         public Form1()
         {
@@ -89,8 +91,6 @@ namespace testealturosyolo
         private void button1_Click(object sender, EventArgs e)
         {
             timer1.Enabled = false;
-            timer2.Enabled = false;
-            timer3.Enabled = false;
             if (Directory.Exists("ger"))
             {
                 string[] s = Directory.GetFiles("ger");
@@ -144,9 +144,97 @@ namespace testealturosyolo
             Directory.CreateDirectory("imgdetected");
             Directory.CreateDirectory("data");
             OpenFileDialog of = new OpenFileDialog();
+            //seleciona telemetria --------------------------------------------
+            //https://phantompilots.com/threads/tool-win-offline-txt-flightrecord-to-csv-converter.70428/
+            //TXTlogToCSVtool "C:\temp\inputFile.txt" "C:\temp\outputFile.csv"
+            OpenFileDialog of2 = new OpenFileDialog();
+            of2.Filter = "TXT|*.txt";
+            if (of2.ShowDialog() == DialogResult.OK)
+            {
+                string pathprograma = "";
+                string s = Directory.GetFiles(@"..\..\").First();
+                s = Path.GetFullPath(s);
+                s = s.Replace("\\" + Path.GetFileName(s), "");
+                pathprograma = s;
+
+                if (Directory.Exists("telemetria"))
+                {
+                    string[] ss = Directory.GetFiles("telemetria");
+                    if (ss.ToList().Count() > 0)
+                    {
+                        foreach (var item in ss.ToList())
+                        {
+                            File.Delete(item);
+                        }
+                    }
+
+                }
+
+                Directory.CreateDirectory("telemetria");
+                try
+                {
+                    Process p = new Process();
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.FileName = "cmd.exe";
+                    info.RedirectStandardInput = true;
+                    info.UseShellExecute = false;
+
+                    p.StartInfo = info;
+                    p.Start();
+                    using (StreamWriter sw = p.StandardInput)
+                    {
+                        if (sw.BaseStream.CanWrite)
+                        {
+                            sw.WriteLine("cd/");
+                            sw.WriteLine($"cd {pathprograma}");
+                            sw.WriteLine($"TXTlogToCSVtool \"{of2.FileName}\" \"{pathprograma}\\bin\\Debug\\telemetria\\telemetria.csv\"");
+                        }
+                    }
+
+                }
+                catch (Exception)
+                { }
+
+            }
+            //---------------------------
+
+
             if (of.ShowDialog() == DialogResult.OK)
             {
-                
+                //converte csv de telemetria para string-------------
+
+                /*try
+                {
+                    var app = new Microsoft.Office.Interop.Excel.Application();
+                    var book = app.Workbooks.Open(@"C:\Users\Administrador\Desktop\FAGUNDES\projetosc#\atividadeimportexportdata\exportacoes\arquivocsv.csv");
+                    Worksheet sheet = book.Worksheets[1];
+
+                    var row = 1;
+
+                    while (true)
+                    {
+                        string s = "";
+                        s = ((Range)sheet.Cells[row, 1]).Text;
+                        List<string> sl = s.Split(';').ToList();
+                        foreach (var item in sl)
+                        {
+                            Console.Write($"| {item} |");
+                        }
+                        Console.WriteLine(" ");
+                        row++;
+                        if (s.Length == 0)
+                        {
+                            break;
+                        }
+                    }
+                    Console.WriteLine("importado csv");
+
+                }
+                catch (Exception)
+                { }*/
+
+
+                //
                 Directory.CreateDirectory("imgtemp");
                 Directory.CreateDirectory("ger");
                 Directory.CreateDirectory("imgdetected");
@@ -165,7 +253,7 @@ namespace testealturosyolo
                 //pictureBox2.Image = new Bitmap(pathsfiles[0]);
                 if (of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
                 {
-                    pictureBox2.Image = new Bitmap(of.FileName);
+                    
                 }
                 else
                 {
@@ -209,13 +297,7 @@ namespace testealturosyolo
 
 
                 }
-                if (!startou && of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
-                {
-                    Thread t = new Thread(analisaimg);
-                    t.Start();
-                    startou = true;
-                    timer2.Enabled = true;
-                }
+                
             }
             
         }
@@ -249,122 +331,7 @@ namespace testealturosyolo
         
 
 
-        void analisaimg()
-        {
-            do
-            {
-                try
-                {
-                    // timer1.Enabled = false;
-                    numpessoas = 0;
-
-                    double total = 0;
-
-                    inicio = DateTime.Now;
-                    var ms = new MemoryStream();
-                    Bitmap b = new Bitmap(pictureBox2.Image);
-
-                    b.Save(ms, ImageFormat.Jpeg);
-
-
-                    var configurationDetector = new ConfigurationDetector();
-                    var config = configurationDetector.Detect();
-
-                    using (var yoloWrapper = new YoloWrapper(config))
-                    {
-                        var items = yoloWrapper.Detect(ms.ToArray());
-                        //items[0].Type -> "Person, Car, ..."
-                        //items[0].Confidence -> 0.0 (low) -> 1.0 (high)
-                        //items[0].X -> bounding box
-                        //items[0].Y -> bounding box
-                        //items[0].Width -> bounding box
-                        //items[0].Height -> bounding box
-                        Pen p = new Pen(Brushes.Red, 20);
-
-                        foreach (var item in items.Where(x => x.Type.ToLower() == "person"))
-                        {
-
-
-                            total += item.Confidence;
-                            //desenha quadrado
-                            numpessoas++;
-                            for (int i2 = 0; i2 < 5; i2++)
-                            {
-                                for (int i = 0; i < item.Width; i++)
-                                {
-                                    try
-                                    {
-                                        b.SetPixel(item.X + i, item.Y + i2, corquadrado);
-                                    }
-                                    catch (Exception)
-                                    { }
-                                }
-                            }
-                            for (int i2 = 0; i2 < 5; i2++)
-                            {
-                                for (int i = 0; i < item.Width + 5; i++)
-                                {
-                                    try
-                                    {
-                                        b.SetPixel(item.X + i, item.Y + i2 + item.Height, corquadrado);
-                                    }
-                                    catch (Exception)
-                                    { }
-                                }
-                            }
-                            for (int i2 = 0; i2 < 5; i2++)
-                            {
-                                for (int i = 0; i < item.Height; i++)
-                                {
-                                    try
-                                    {
-                                        b.SetPixel(item.X + i2, item.Y + i, corquadrado);
-                                    }
-                                    catch (Exception)
-                                    { }
-                                }
-                            }
-                            for (int i2 = 0; i2 < 5; i2++)
-                            {
-                                for (int i = 0; i < item.Height; i++)
-                                {
-                                    try
-                                    {
-                                        b.SetPixel(item.X + i2 + item.Width, item.Y + i, corquadrado);
-                                    }
-                                    catch (Exception)
-                                    { }
-                                }
-                            }
-
-
-
-                        }
-                        double a = 0;
-                        a = total / Convert.ToDouble(numpessoas);
-                        a = Math.Round(a, 4);
-                        a = a * 100;
-                        np = numpessoas;
-                        media = a;
-
-                        img = b;
-                        //pictureBox1.Image = b;
-                        //label2.Text = $"media %: {a}";
-                        //label1.Text = $"n° pessoas: {numpessoas}";
-                    }
-
-                    DateTime tempoagora = DateTime.Now;
-                    TimeSpan ts = tempoagora - inicio;
-                    miliseconds = Math.Truncate(ts.TotalMilliseconds);
-                    //label6.Text = $"tempo processamento(ms): {Math.Truncate(ts.TotalMilliseconds)}";
-                    //timer1.Enabled = true;
-                }
-                catch (Exception)
-                {}
-                
-            } while (true);
-
-        }
+       
         private void timer1_Tick(object sender, EventArgs e)
         {
             
@@ -377,10 +344,7 @@ namespace testealturosyolo
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            pictureBox1.Image = img;
-            label2.Text = $"media %: {media}";
-            label1.Text = $"n° pessoas: {np}";
-            label6.Text = $"tempo processamento(ms): {miliseconds}";
+            
             
         }
 
@@ -592,7 +556,14 @@ namespace testealturosyolo
         {
            
             graphmap.FillRectangle(Brushes.Transparent, 0, 0, 1000, 1000);
-            graphmap.DrawImage(new Bitmap(@"imgmapa.png"), 0, 0, pictureBox3.Width, pictureBox3.Height);
+            try
+            {
+                graphmap.DrawImage(new Bitmap(@"imgmapa.png"), 0, 0, pictureBox3.Width, pictureBox3.Height);
+            }
+            catch (Exception)
+            {
+                graphmap.DrawImage(new Bitmap(pictureBox3.Width,pictureBox3.Height), 0, 0, pictureBox3.Width, pictureBox3.Height);
+            }
 
             graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.quadradocamera, (float)dronerotacao), (float)droneX - 60, (float)droneY - 80, 120, 160);
             
@@ -606,7 +577,7 @@ namespace testealturosyolo
 
         private void timer3_Tick(object sender, EventArgs e)
         {
-            pictureBox2.Image = imagemvideo;
+            
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -622,5 +593,7 @@ namespace testealturosyolo
                 item.Kill();
             }
         }
+
+        
     }
 }
