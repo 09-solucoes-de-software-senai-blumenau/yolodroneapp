@@ -22,6 +22,9 @@ using Microsoft.Office.Interop.Excel;
 using Range = Microsoft.Office.Interop.Excel.Range;
 using Point = System.Drawing.Point;
 using System.Text.RegularExpressions;
+using GMap.NET;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
 
 namespace testealturosyolo
 {
@@ -78,6 +81,13 @@ namespace testealturosyolo
         //pontos detecção 
         public static List<objtelemetria> cordenadasdetec = new List<objtelemetria>();
 
+        bool inicioumapa = false;
+        //real time
+        string pathcelular = "";
+
+        string pathtelemetria = "";
+        string pathvideo = "";
+        
         public Form1()
         {
             InitializeComponent();
@@ -217,18 +227,6 @@ namespace testealturosyolo
                 Directory.CreateDirectory("ger");
                 Directory.CreateDirectory("imgdetected");
                 Directory.CreateDirectory("data");
-                //List<string> pathsfiles = new List<string>();
-                //try
-                //{
-                //    pathsfiles = Directory.GetFiles("C:\\Users\\Administrador\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\Y2ZHAK3M\\").ToList();
-                //}
-                //catch (Exception)
-                //{
-                //    pathsfiles = Directory.GetFiles("C:\\Users\\Administrador\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\FNXD0NZ6\\").ToList();
-                //}
-                //pathsfiles = pathsfiles.Where(x => x.Contains(".png") || x.Contains(".jpg")).ToList();
-
-                //pictureBox2.Image = new Bitmap(pathsfiles[0]);
                 if (of.FileName.Contains(".png") || of.FileName.Contains(".jpg"))
                 {
                     
@@ -282,8 +280,18 @@ namespace testealturosyolo
 
         public void movedronesegundo(int sec)
         {
+            if (!inicioumapa)
+            {
+                gMapControl1.MapProvider = GMapProviders.GoogleSatelliteMap;
+                gMapControl1.Position = new GMap.NET.PointLatLng(latitude, longitude);
+                gMapControl1.Zoom = 18;
+                inicioumapa = true;
+            }
             objtelemetria ob = rawtelemetrydata.FirstOrDefault(x => x.deltasegundos == sec);
-            posicionadrone(ob.lat, ob.log, 0, ob.rotacao);
+            latitude = ob.lat;
+            longitude = ob.log;
+            dronerotacao = ob.rotacao;
+            //posicionadrone(ob.lat, ob.log, 0, ob.rotacao);
         }
 
         void playvideo()
@@ -298,15 +306,7 @@ namespace testealturosyolo
                 Thread.Sleep(100);
             }
         }
-            private void button2_Click(object sender, EventArgs e)
-        {
-            ColorDialog c = new ColorDialog();
-            if(c.ShowDialog() == DialogResult.OK)
-            {
-                corquadrado = c.Color;
-                panel2.BackColor = c.Color;
-            }
-        }
+           
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -385,6 +385,7 @@ namespace testealturosyolo
 
         public void posicionadrone(double lat,double longi, double altura,double rotacao)
         {
+            //funciona para uma picture box de Size: 525; 508 !!!!!
             dronelatitude = lat;
             dronelongitude = longi;
             dronealtura = altura;
@@ -539,8 +540,15 @@ namespace testealturosyolo
         }
         private void timer1_Tick_1(object sender, EventArgs e)
         {
-           
-            graphmap.FillRectangle(Brushes.Transparent, 0, 0, 1000, 1000);
+            gMapControl1.Overlays.Clear();
+            PointLatLng p = new PointLatLng(latitude, longitude);
+            GMapMarker marker = new GMarkerGoogle(p, RotateImage(new Bitmap(testealturosyolo.Properties.Resources.imgdronecima, 50, 50),(float)dronerotacao));
+            GMapOverlay markers = new GMapOverlay("markers");
+            markers.Markers.Add(marker);
+            gMapControl1.Overlays.Add(markers);
+            gMapControl1.Position = gMapControl1.Position;
+            //codigo antigo
+            /*graphmap.FillRectangle(Brushes.Transparent, 0, 0, 1000, 1000);
             try
             {
                 graphmap.DrawImage(new Bitmap(@"imgmapa.png"), 0, 0, pictureBox3.Width, pictureBox3.Height);
@@ -552,7 +560,7 @@ namespace testealturosyolo
 
             graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.quadradocamera, (float)dronerotacao), (float)droneX - 60, (float)droneY - 80, 120, 160);
             
-            graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.imgdronecima,(float)dronerotacao), (float)droneX-20, (float)droneY-20, 40, 40);
+            graphmap.DrawImage(RotateImage(testealturosyolo.Properties.Resources.imgdronecima,(float)dronerotacao), (float)droneX-20, (float)droneY-20, 40, 40);*/
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -585,7 +593,7 @@ namespace testealturosyolo
             DateTime tempoinicio = new DateTime();
             bool first = true;
             string todotexto = File.ReadAllText($@"{pathprograma}\bin\Debug\telemetria\telemetria.csv");
-            Match m = Regex.Match(todotexto, "(2019)\\/(\\d+)\\/(\\d+)\\s?(\\d+):(\\d+):([0-9\\.]+),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*),([\\-0-9\\/\\s:\\.a-zA-Z_]*),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*)", RegexOptions.Multiline);
+            Match m = Regex.Match(todotexto, $"({DateTime.Now.Year})\\/(\\d+)\\/(\\d+)\\s?(\\d+):(\\d+):([0-9\\.]+),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*),([\\-0-9\\/\\s:\\.a-zA-Z_]*),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*)", RegexOptions.Multiline);
             do
             {
                 objtelemetria ov = new objtelemetria();
@@ -613,10 +621,10 @@ namespace testealturosyolo
             } while (m.Success);
 
 
-            if (rawtelemetrydata.Count() > 0)
-            {
-                new Formalteralocaliza(rawtelemetrydata[0].lat, rawtelemetrydata[0].log).ShowDialog();
-            }
+            //if (rawtelemetrydata.Count() > 0)
+            //{
+            //    new Formalteralocaliza(rawtelemetrydata[0].lat, rawtelemetrydata[0].log).ShowDialog();
+            //}
 
             //-----------------------------
         }
@@ -628,8 +636,43 @@ namespace testealturosyolo
             {
                 item.Kill();
             }
+            Environment.Exit(0);
         }
 
-        
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            MessageBox.Show("Selecione qualquer arquivo de seu celular para sincronizar com o drone");
+            string s = "";
+            OpenFileDialog of = new OpenFileDialog();
+            if (of.ShowDialog() == DialogResult.OK)
+            {
+                s = of.FileName;
+            }
+            pathcelular = s.Replace("\\"+Path.GetFileName(s), "");
+            List<string> arq = Directory.GetFiles(pathcelular).ToList();
+            List<string> arquivotelemetria = arq.Where(x => x.Contains($"DJIFlightRecord_{DateTime.Now.Year}-")).ToList();
+            string mestexto = "";
+            if (DateTime.Now.Month <10)
+            {
+                mestexto += "0";
+                mestexto += DateTime.Now.Month.ToString();
+                
+            }
+            else
+            {
+                mestexto = DateTime.Now.Month.ToString();
+            }
+            List<string> arqvideo = arq.Where(x => x.Contains($"2019_{mestexto}") && x.Contains(".mp4")).ToList();
+            if(arquivotelemetria.Count>0 && arqvideo.Count > 0)
+            {
+                MessageBox.Show("sincronizado com sucesso!");
+                pathtelemetria = arquivotelemetria[0];
+                pathvideo = arqvideo[0];
+            }
+            else
+            {
+                MessageBox.Show("tente novamente!");
+            }
+        }
     }
 }

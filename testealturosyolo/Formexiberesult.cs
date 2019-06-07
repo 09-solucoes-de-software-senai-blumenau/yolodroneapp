@@ -301,5 +301,10 @@ namespace testealturosyolo
             frameolhando = 0;
             ind = 0;
         }
+
+        private void barrarep_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
