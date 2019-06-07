@@ -31,12 +31,21 @@ namespace testealturosyolo
                 zoom = Convert.ToDouble(ss[2]);
             }
         }
+
+        public Formalteralocaliza(double lat,double log)
+        {
+            InitializeComponent();
+            latitude = lat;
+            longitude = log;
+            zoom = Convert.ToDouble(18);
+            
+        }
         Form1 ff;
         public Formalteralocaliza(Form1 f)
         {
             InitializeComponent();
             ff = f;
-            button1.Visible = false;
+            
             button3.Visible = true;
             if (File.Exists(@"localcord.txt"))
             {
@@ -53,6 +62,7 @@ namespace testealturosyolo
             gMapControl1.MapProvider = GMapProviders.GoogleMap;
             gMapControl1.Position = new GMap.NET.PointLatLng(latitude,longitude);
             gMapControl1.Zoom = zoom;
+            timer2.Enabled = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,8 +76,8 @@ namespace testealturosyolo
                 {
                     sw.WriteLine($"{gMapControl1.Position.Lat}/{gMapControl1.Position.Lng}/{gMapControl1.Zoom}");
                 }
-                button1.Visible = false;
-                button2.Visible = false;
+                //button1.Visible = false;
+                //button2.Visible = false;
                 gMapControl1.MapProvider = GMapProviders.GoogleSatelliteMap;
                 timer1.Enabled = true;
             }
@@ -115,6 +125,21 @@ namespace testealturosyolo
             ff.posicionadrone(gMapControl1.Position.Lat, gMapControl1.Position.Lng, 10, 25);
             Hide();
             Close();
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            timer2.Enabled = false;
+            FileStream f = File.Create(@"localcord.txt");
+            f.Close();
+            using (var sw = new StreamWriter(@"localcord.txt"))
+            {
+                sw.WriteLine($"{gMapControl1.Position.Lat}/{gMapControl1.Position.Lng}/{gMapControl1.Zoom}");
+            }
+            //button1.Visible = false;
+            //button2.Visible = false;
+            gMapControl1.MapProvider = GMapProviders.GoogleSatelliteMap;
+            timer1.Enabled = true;
         }
     }
 }

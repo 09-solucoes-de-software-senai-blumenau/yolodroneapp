@@ -1,6 +1,6 @@
 ﻿namespace testealturosyolo
 {
-    partial class Formalteralocaliza
+    partial class FormMostralocal
     {
         /// <summary>
         /// Required designer variable.
@@ -31,14 +31,11 @@
             this.components = new System.ComponentModel.Container();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button3 = new System.Windows.Forms.Button();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // gMapControl1
             // 
             this.gMapControl1.Bearing = 0F;
-            this.gMapControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.gMapControl1.CanDragMap = true;
             this.gMapControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gMapControl1.EmptyTileColor = System.Drawing.Color.Navy;
@@ -47,8 +44,8 @@
             this.gMapControl1.LevelsKeepInMemmory = 5;
             this.gMapControl1.Location = new System.Drawing.Point(0, 0);
             this.gMapControl1.MarkersEnabled = true;
-            this.gMapControl1.MaxZoom = 22;
-            this.gMapControl1.MinZoom = 2;
+            this.gMapControl1.MaxZoom = 20;
+            this.gMapControl1.MinZoom = 15;
             this.gMapControl1.MouseWheelZoomEnabled = true;
             this.gMapControl1.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
             this.gMapControl1.Name = "gMapControl1";
@@ -59,44 +56,23 @@
             this.gMapControl1.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.gMapControl1.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.gMapControl1.ShowTileGridLines = false;
-            this.gMapControl1.Size = new System.Drawing.Size(621, 584);
+            this.gMapControl1.Size = new System.Drawing.Size(774, 593);
             this.gMapControl1.TabIndex = 0;
             this.gMapControl1.Zoom = 0D;
-            this.gMapControl1.Load += new System.EventHandler(this.gMapControl1_Load);
             // 
             // timer1
             // 
-            this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(487, 549);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(113, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "muda pos drone";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Visible = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // timer2
-            // 
-            this.timer2.Interval = 500;
-            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
-            // 
-            // Formalteralocaliza
+            // FormMostralocal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(621, 584);
-            this.Controls.Add(this.button3);
+            this.ClientSize = new System.Drawing.Size(774, 593);
             this.Controls.Add(this.gMapControl1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.MinimizeBox = false;
-            this.Name = "Formalteralocaliza";
-            this.Text = "Formalteralocaliza";
-            this.Load += new System.EventHandler(this.Formalteralocaliza_Load);
+            this.Name = "FormMostralocal";
+            this.Text = "FormMostralocal";
+            this.Load += new System.EventHandler(this.FormMostralocal_Load);
             this.ResumeLayout(false);
 
         }
@@ -105,7 +81,5 @@
 
         private GMap.NET.WindowsForms.GMapControl gMapControl1;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Timer timer2;
     }
 }

@@ -13,6 +13,7 @@ namespace testealturosyolo
     public partial class Itemdetectado : UserControl
     {
         Formexiberesult ff;
+        objtelemetria o;
         int framed = 0;
         public Itemdetectado(detectado d, Formexiberesult f)
         {
@@ -32,6 +33,9 @@ namespace testealturosyolo
                 segundos = d.frame;
             }
             label2.Text = $"tempo: {minutos}:{segundos}";
+            o = Form1.rawtelemetrydata.FirstOrDefault(x => x.deltasegundos == framed);
+            label3.Text = $"lat: {o.lat}";
+            label4.Text = $"lng: {o.log}";
         }
 
        
@@ -43,6 +47,11 @@ namespace testealturosyolo
         private void Itemdetectado_Click(object sender, EventArgs e)
         {
             ff.clicoudeteccao(framed-1);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            new FormMostralocal(o.lat, o.log).Show();
         }
     }
 }

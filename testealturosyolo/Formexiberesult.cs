@@ -22,10 +22,11 @@ namespace testealturosyolo
         int frameolhando = 0;
         bool olhandoframe = false;
         bool pausou = false;
-
-        public Formexiberesult()
+        public Form1 ff;
+        public Formexiberesult(Form1 f)
         {
             InitializeComponent();
+            ff = f;
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -134,6 +135,7 @@ namespace testealturosyolo
             
         }
         int ind=0;
+        
         private void timer2_Tick(object sender, EventArgs e)
         {
             if (ind < listaimg.Count())
@@ -194,6 +196,10 @@ namespace testealturosyolo
                         }
                     }
                 }
+                
+                    ff.movedronesegundo(ind);
+                    
+                
                 ind++;
                 
             }

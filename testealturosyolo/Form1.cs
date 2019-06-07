@@ -18,6 +18,10 @@ using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using Microsoft.Office.Interop.Excel;
+using Range = Microsoft.Office.Interop.Excel.Range;
+using Point = System.Drawing.Point;
+using System.Text.RegularExpressions;
 
 namespace testealturosyolo
 {
@@ -68,7 +72,11 @@ namespace testealturosyolo
         public static List<Bitmap> listaframes = new List<Bitmap>();
 
         //telemetry
-        List<string> rawtelemetrydata = new List<string>();
+        public static List<objtelemetria> rawtelemetrydata = new List<objtelemetria>();
+        string pathprograma = "";
+
+        //pontos detecção 
+        public static List<objtelemetria> cordenadasdetec = new List<objtelemetria>();
 
         public Form1()
         {
@@ -90,7 +98,6 @@ namespace testealturosyolo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = false;
             if (Directory.Exists("ger"))
             {
                 string[] s = Directory.GetFiles("ger");
@@ -149,9 +156,10 @@ namespace testealturosyolo
             //TXTlogToCSVtool "C:\temp\inputFile.txt" "C:\temp\outputFile.csv"
             OpenFileDialog of2 = new OpenFileDialog();
             of2.Filter = "TXT|*.txt";
+            
             if (of2.ShowDialog() == DialogResult.OK)
             {
-                string pathprograma = "";
+                
                 string s = Directory.GetFiles(@"..\..\").First();
                 s = Path.GetFullPath(s);
                 s = s.Replace("\\" + Path.GetFileName(s), "");
@@ -164,7 +172,7 @@ namespace testealturosyolo
                     {
                         foreach (var item in ss.ToList())
                         {
-                            File.Delete(item);
+                            //File.Delete(item);
                         }
                     }
 
@@ -201,40 +209,10 @@ namespace testealturosyolo
 
             if (of.ShowDialog() == DialogResult.OK)
             {
-                //converte csv de telemetria para string-------------
 
-                /*try
-                {
-                    var app = new Microsoft.Office.Interop.Excel.Application();
-                    var book = app.Workbooks.Open(@"C:\Users\Administrador\Desktop\FAGUNDES\projetosc#\atividadeimportexportdata\exportacoes\arquivocsv.csv");
-                    Worksheet sheet = book.Worksheets[1];
-
-                    var row = 1;
-
-                    while (true)
-                    {
-                        string s = "";
-                        s = ((Range)sheet.Cells[row, 1]).Text;
-                        List<string> sl = s.Split(';').ToList();
-                        foreach (var item in sl)
-                        {
-                            Console.Write($"| {item} |");
-                        }
-                        Console.WriteLine(" ");
-                        row++;
-                        if (s.Length == 0)
-                        {
-                            break;
-                        }
-                    }
-                    Console.WriteLine("importado csv");
-
-                }
-                catch (Exception)
-                { }*/
+                convertecsv();
 
 
-                //
                 Directory.CreateDirectory("imgtemp");
                 Directory.CreateDirectory("ger");
                 Directory.CreateDirectory("imgdetected");
@@ -258,9 +236,9 @@ namespace testealturosyolo
                 else
                 {
                     capture = new VideoCapture(of.FileName);
-                    Mat m = new Mat();
-                    capture.Read(m);
-                    imagemvideo = m.Bitmap;
+                    Mat mat = new Mat();
+                    capture.Read(mat);
+                    imagemvideo = mat.Bitmap;
                     totalframe = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameCount);
                     fps = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Fps);
                     //Thread video = new Thread(playvideo);
@@ -293,7 +271,7 @@ namespace testealturosyolo
                         quantidadepick++;   
                         }
 
-                    new Formtelaprocessamento(listaframes, fps, quantidadepick, corquadrado).ShowDialog();
+                    new Formtelaprocessamento(listaframes, fps, quantidadepick, corquadrado,this).ShowDialog();
 
 
                 }
@@ -301,6 +279,13 @@ namespace testealturosyolo
             }
             
         }
+
+        public void movedronesegundo(int sec)
+        {
+            objtelemetria ob = rawtelemetrydata.FirstOrDefault(x => x.deltasegundos == sec);
+            posicionadrone(ob.lat, ob.log, 0, ob.rotacao);
+        }
+
         void playvideo()
         {
             Mat m = new Mat();
@@ -572,7 +557,7 @@ namespace testealturosyolo
 
         private void button4_Click(object sender, EventArgs e)
         {
-            new Formalteralocaliza(this).ShowDialog();
+            
         }
 
         private void timer3_Tick(object sender, EventArgs e)
@@ -582,7 +567,58 @@ namespace testealturosyolo
 
         private void button5_Click(object sender, EventArgs e)
         {
-            new Formexiberesult().Show();
+
+            convertecsv();
+
+            new Formexiberesult(this).Show();
+        }
+
+        void convertecsv()
+        {
+            //converte csv de telemetria para object-------------
+
+            string s = Directory.GetFiles(@"..\..\").First();
+            s = Path.GetFullPath(s);
+            s = s.Replace("\\" + Path.GetFileName(s), "");
+            pathprograma = s;
+
+            DateTime tempoinicio = new DateTime();
+            bool first = true;
+            string todotexto = File.ReadAllText($@"{pathprograma}\bin\Debug\telemetria\telemetria.csv");
+            Match m = Regex.Match(todotexto, "(2019)\\/(\\d+)\\/(\\d+)\\s?(\\d+):(\\d+):([0-9\\.]+),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*),([\\-0-9\\/\\s:\\.a-zA-Z_]*),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*)", RegexOptions.Multiline);
+            do
+            {
+                objtelemetria ov = new objtelemetria();
+                ov.lat = Convert.ToDouble(m.Groups[7].Value.Replace('.', ','));
+                ov.log = Convert.ToDouble(m.Groups[8].Value.Replace('.', ','));
+                ov.date = new DateTime(Convert.ToInt32(m.Groups[1].Value), Convert.ToInt32(m.Groups[2].Value), Convert.ToInt32(m.Groups[3].Value), Convert.ToInt32(m.Groups[4].Value), Convert.ToInt32(m.Groups[5].Value), Convert.ToInt32(Math.Truncate(Convert.ToDouble(m.Groups[6].Value.Replace('.', ',')))));
+                if (first)
+                {
+                    ov.deltasegundos = 0;
+                    tempoinicio = ov.date;
+                    first = false;
+                }
+                else
+                {
+                    TimeSpan ts = ov.date - tempoinicio;
+                    ov.deltasegundos = Convert.ToInt32(Math.Truncate(ts.TotalSeconds));
+                }
+                string tyaw = m.Groups[9].Value.Replace('.', ',');
+                double rot = Convert.ToDouble(tyaw);
+                rot = rot * -1;
+                ov.rotacao = rot;
+                rawtelemetrydata.Add(ov);
+                m = m.NextMatch();
+
+            } while (m.Success);
+
+
+            if (rawtelemetrydata.Count() > 0)
+            {
+                new Formalteralocaliza(rawtelemetrydata[0].lat, rawtelemetrydata[0].log).ShowDialog();
+            }
+
+            //-----------------------------
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

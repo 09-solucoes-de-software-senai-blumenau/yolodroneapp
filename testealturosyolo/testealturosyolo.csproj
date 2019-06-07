@@ -78,6 +78,11 @@
     <Reference Include="GMap.NET.WindowsPresentation, Version=1.9.2.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
       <HintPath>packages\GMap.NET.Windows.1.9.2\lib\net40\GMap.NET.WindowsPresentation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\Microsoft.Office.Interop.Excel\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -126,6 +131,12 @@
     <Compile Include="Formexiberesult.Designer.cs">
       <DependentUpon>Formexiberesult.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormMostralocal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMostralocal.Designer.cs">
+      <DependentUpon>FormMostralocal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Formtelaprocessamento.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,6 +149,7 @@
     <Compile Include="Itemdetectado.Designer.cs">
       <DependentUpon>Itemdetectado.cs</DependentUpon>
     </Compile>
+    <Compile Include="objtelemetria.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -148,6 +160,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Formexiberesult.resx">
       <DependentUpon>Formexiberesult.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMostralocal.resx">
+      <DependentUpon>FormMostralocal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Formtelaprocessamento.resx">
       <DependentUpon>Formtelaprocessamento.cs</DependentUpon>
@@ -206,6 +221,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <None Include="Resources\pessoamapa.png" />
+    <None Include="Resources\imgmapaicon.png" />
     <None Include="Resources\LogoProjetoSmartVisionAI.png" />
     <None Include="Resources\imglocotemp.png" />
     <None Include="Resources\play.png" />

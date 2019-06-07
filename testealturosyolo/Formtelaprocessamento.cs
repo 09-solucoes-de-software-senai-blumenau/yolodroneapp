@@ -25,16 +25,16 @@ namespace testealturosyolo
 
 
         double d;
-
+        Form1 ff;
         List<detectado> detectadolist = new List<detectado>();
-        public Formtelaprocessamento(List<Bitmap> listaimg, double fps, int totalframes,Color cor)
+        public Formtelaprocessamento(List<Bitmap> listaimg, double fps, int totalframes,Color cor,Form1 f)
         {
             InitializeComponent();
             this.fps = fps;
             this.listaframes = listaimg;
             totalframe = totalframes;
             corquadrado = cor;
-            
+            ff = f;
         }
 
         private void Formtelaprocessamento_Load(object sender, EventArgs e)
@@ -73,7 +73,7 @@ namespace testealturosyolo
             {
                 timer1.Enabled = false;
                 Hide();
-                new Formexiberesult().Show();
+                new Formexiberesult(ff).Show();
                 Close();
             }
         }
