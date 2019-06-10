@@ -52,15 +52,44 @@ namespace videospliter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            int d = Convert.ToInt32(Math.Round(Convert.ToDouble(quantdiv.ToList().Count()) / 30));
-            int ultimoindex = -1;
-            int index = idinstancia * d;
-            index++;
-            for (int i = 0; i < d; i++)
+            if (File.Exists("aovivo.txt"))
             {
+                int d = Convert.ToInt32(Math.Round(Convert.ToDouble(quantdiv.ToList().Count()) / 30));
+                int ultimoindex = -1;
+                int index = idinstancia * d;
+                index++;
+                for (int i = 0; i < d; i++)
+                {
+                    try
+                    {
+                        analisaframe(index + i);
+                    }
+                    catch (Exception)
+                    { }
+                    try
+                    {
+                        if (detectadolist.Count() > 0)
+                        {
+                            if (ultimoindex != detectadolist.Count() - 1)
+                            {
+                                exportaresult(detectadolist.Count() - 1);
+                                ultimoindex = detectadolist.Count() - 1;
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    { }
+                }
+
+                Hide();
+                Close();
+            }
+            else
+            {
+                int frameanalisar = Directory.GetFiles(pathgeral + @"/imgtemp").ToList().Count(); 
                 try
                 {
-                    analisaframe(index + i);
+                    analisaframe(frameanalisar);
                 }
                 catch (Exception)
                 { }
@@ -68,19 +97,15 @@ namespace videospliter
                 {
                     if (detectadolist.Count() > 0)
                     {
-                        if (ultimoindex != detectadolist.Count() - 1)
-                        {
-                            exportaresult(detectadolist.Count() - 1);
-                            ultimoindex = detectadolist.Count() - 1;
-                        }
+                       exportaresult(detectadolist.Count() - 1);
+                       
                     }
                 }
                 catch (Exception)
-                {}
+                { }
+                Hide();
+                Close();
             }
-
-            Hide();
-            Close();
         }
         void exportaresult(int index)
         {

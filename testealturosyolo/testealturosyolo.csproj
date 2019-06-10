@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <None Include="Resources\aovivoimg.png" />
     <None Include="Resources\pessoamapa.png" />
     <None Include="Resources\imgmapaicon.png" />
     <None Include="Resources\LogoProjetoSmartVisionAI.png" />

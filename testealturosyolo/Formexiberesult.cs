@@ -13,7 +13,7 @@ namespace testealturosyolo
 {
     public partial class Formexiberesult : Form
     {
-        List<Bitmap> listaimg = new List<Bitmap>();
+        public static List<Bitmap> listaimg = new List<Bitmap>();
         List<detectado> detectadolist = new List<detectado>();
         List<Itemdetectado> detecitem = new List<Itemdetectado>();
         string[] baseimg;
@@ -22,18 +22,29 @@ namespace testealturosyolo
         int frameolhando = 0;
         bool olhandoframe = false;
         bool pausou = false;
-        public Form1 ff;
+        public Form1 ff = null;
+
+        //real time 
+        bool detector1disp = true;
+        bool detector2disp = true;
         public Formexiberesult(Form1 f)
         {
             InitializeComponent();
             ff = f;
+        }
+        public Formexiberesult(int mode)
+        {
+            InitializeComponent();
+            timer3.Enabled = true;
+            timer2.Enabled = true;
+            timer1.Enabled = true;
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             
         }
-
+        
         public void clicoudeteccao(int frame)
         {
             frameolhando = frame;
@@ -50,48 +61,57 @@ namespace testealturosyolo
 
         private void Formexiberesult_Load(object sender, EventArgs e)
         {
-            gbarra = barrarep.CreateGraphics();
-            string[] s = Directory.GetFiles("data");
-                    baseimg = Directory.GetFiles("imgtemp");
-                    string[] s2 = Directory.GetFiles("imgdetected");
-            int segundos = 0;
-            int minutos = 0;
-            if (baseimg.Count() > 60)
+            if (ff != null)
             {
-                minutos = Convert.ToInt32(Math.Truncate(Convert.ToDouble(baseimg.Count()) / 60));
-                segundos = baseimg.Count() - (minutos * 60);
+                gbarra = barrarep.CreateGraphics();
+                string[] s = Directory.GetFiles("data");
+                baseimg = Directory.GetFiles("imgtemp");
+                string[] s2 = Directory.GetFiles("imgdetected");
+                int segundos = 0;
+                int minutos = 0;
+                if (baseimg.Count() > 60)
+                {
+                    minutos = Convert.ToInt32(Math.Truncate(Convert.ToDouble(baseimg.Count()) / 60));
+                    segundos = baseimg.Count() - (minutos * 60);
+                }
+                else
+                {
+                    segundos = baseimg.Count();
+                }
+                label3.Text = $"{minutos}:{segundos}";
+                foreach (var item in baseimg.ToList())
+                {
+                    listaimg.Add(new Bitmap(item));
+                }
+                foreach (var item in s.ToList())
+                {
+                    string raw = "";
+                    raw = File.ReadAllText(item);
+                    string[] data = raw.Split('|');
+                    detectado dt = new detectado();
+                    dt.confianca = Convert.ToDouble(data[0]);
+                    dt.quantpessoas = Convert.ToInt32(data[1]);
+                    dt.frame = Convert.ToInt32(data[2]);
+                    dt.img = new Bitmap(s2.ToList().FirstOrDefault(x => x.Contains($"{dt.frame}")));
+                    detectadolist.Add(dt);
+                }
+                foreach (var item in detectadolist.OrderBy(x => x.frame))
+                {
+                    tableLayoutPanel1.Controls.Add(new Itemdetectado(item, this));
+                    detecitem.Add(new Itemdetectado(item, this));
+                    listaimg[item.frame - 1] = item.img;
+                }
+
+
+                timer1.Enabled = true;
+                timer2.Enabled = true;
             }
             else
             {
-                segundos = baseimg.Count();
+                button2.Visible = false;
+                button1.Visible = false;
+                button3.Visible = true;
             }
-            label3.Text = $"{minutos}:{segundos}";
-            foreach (var item in baseimg.ToList())
-                    {
-                        listaimg.Add(new Bitmap(item));
-                    }
-                    foreach (var item in s.ToList())
-                    {
-                        string raw = "";
-                        raw = File.ReadAllText(item);
-                        string[] data = raw.Split('|');
-                        detectado dt = new detectado();
-                        dt.confianca = Convert.ToDouble(data[0]);
-                        dt.quantpessoas = Convert.ToInt32(data[1]);
-                        dt.frame = Convert.ToInt32(data[2]);
-                        dt.img = new Bitmap(s2.ToList().FirstOrDefault(x => x.Contains($"{dt.frame}")));
-                        detectadolist.Add(dt);
-                    }
-                    foreach (var item in detectadolist.OrderBy(x=>x.frame))
-                    {
-                        tableLayoutPanel1.Controls.Add(new Itemdetectado(item, this));
-                        detecitem.Add(new Itemdetectado(item, this));
-                        listaimg[item.frame - 1] = item.img;
-                    }
-           
-
-            timer1.Enabled = true;
-            timer2.Enabled = true;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -138,8 +158,13 @@ namespace testealturosyolo
         
         private void timer2_Tick(object sender, EventArgs e)
         {
+            baseimg = Directory.GetFiles("imgtemp");
             if (ind < listaimg.Count())
             {
+                if (ff == null)
+                {
+                    ind = listaimg.Count() - 1;
+                }
                 try
                 {
                     pictureBox1.Image = listaimg[ind];
@@ -161,17 +186,19 @@ namespace testealturosyolo
                 //----------
                 //move barra rep sozinho
                 int widthbarra = barrarep.Width;
-                if (!arastando)
-                {
-                    int d = baseimg.Count();
-                    widthbarra = barrarep.Width;
-                    int xinicio = barrarep.Location.X;
+                
+                    if (!arastando)
+                    {
+                        int d = baseimg.Count();
+                        widthbarra = barrarep.Width;
+                        int xinicio = barrarep.Location.X;
 
-                    double porcent = Convert.ToDouble(ind) / Convert.ToDouble(d);
-                    porcent = porcent * widthbarra;
-                    controlerep.Location = new Point(xinicio + Convert.ToInt32(Math.Round(porcent)), controlerep.Location.Y);
+                        double porcent = Convert.ToDouble(ind) / Convert.ToDouble(d);
+                        porcent = porcent * widthbarra;
+                        controlerep.Location = new Point(xinicio + Convert.ToInt32(Math.Round(porcent)), controlerep.Location.Y);
 
-                }
+                    }
+                
                 //---------------
 
 
@@ -196,11 +223,17 @@ namespace testealturosyolo
                         }
                     }
                 }
-                
+
+                if (ff != null)
+                {
                     ff.movedronesegundo(ind);
-                    
-                
-                ind++;
+                }
+
+
+                if (ff != null)
+                {
+                    ind++;
+                }
                 
             }
             else
@@ -305,6 +338,33 @@ namespace testealturosyolo
         private void barrarep_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+        int numeroimg = 1;
+        private void timer3_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                listaimg.Add(new Bitmap($@"imgtemp\img{numeroimg}.png"));
+                numeroimg++;
+            }
+            catch (Exception)
+            {}
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void barrarep_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            timer2.Enabled = true;
+            pausou = false;
         }
     }
 }

@@ -88,6 +88,11 @@ namespace testealturosyolo
         string pathtelemetria = "";
         string pathvideo = "";
         
+        public static Bitmap imgatual = null;
+
+        bool concluiutelemetria = true;
+        bool concluiufoto = true;
+        
         public Form1()
         {
             InitializeComponent();
@@ -120,6 +125,12 @@ namespace testealturosyolo
                 }
                 Directory.Delete("ger");
             }
+            try
+            {
+                File.Delete("aovivo.txt");
+            }
+            catch (Exception)
+            { }
             if (Directory.Exists("imgdetected"))
             {
                 string[] s = Directory.GetFiles("imgdetected");
@@ -196,7 +207,7 @@ namespace testealturosyolo
                     info.FileName = "cmd.exe";
                     info.RedirectStandardInput = true;
                     info.UseShellExecute = false;
-
+                    p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
                     p.StartInfo = info;
                     p.Start();
                     using (StreamWriter sw = p.StandardInput)
@@ -575,7 +586,12 @@ namespace testealturosyolo
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                File.Delete("aovivo.txt");
+            }
+            catch (Exception)
+            { }
             convertecsv();
 
             new Formexiberesult(this).Show();
@@ -636,6 +652,12 @@ namespace testealturosyolo
             {
                 item.Kill();
             }
+            try
+            {
+                File.Delete("aovivo.txt");
+            }
+            catch (Exception)
+            {}
             Environment.Exit(0);
         }
 
@@ -668,11 +690,151 @@ namespace testealturosyolo
                 MessageBox.Show("sincronizado com sucesso!");
                 pathtelemetria = arquivotelemetria[0];
                 pathvideo = arqvideo[0];
+                if (Directory.Exists("imgtemp"))
+                {
+                    string[] su = Directory.GetFiles("imgtemp");
+                    if (su.ToList().Count() > 0)
+                    {
+                        foreach (var item in su.ToList())
+                        {
+                            File.Delete(item);
+                        }
+                    }
+                }
+                if (Directory.Exists("data"))
+                {
+                    string[] su = Directory.GetFiles("data");
+                    if (su.ToList().Count() > 0)
+                    {
+                        foreach (var item in su.ToList())
+                        {
+                            File.Delete(item);
+                        }
+                    }
+                    
+                }
+                if (Directory.Exists("imgdetected"))
+                {
+                    string[] su = Directory.GetFiles("imgdetected");
+                    if (su.ToList().Count() > 0)
+                    {
+                        foreach (var item in su.ToList())
+                        {
+                            File.Delete(item);
+                        }
+                    }
+                    Directory.Delete("imgdetected");
+                }
+                Directory.CreateDirectory("imgtemp");
+                Directory.CreateDirectory("ger");
+                Directory.CreateDirectory("imgdetected");
+                Directory.CreateDirectory("data");
+                FileStream f = File.Create("aovivo.txt");
+                f.Close();
+                timer2.Enabled = true;
+                new Formexiberesult(1).Show();
             }
             else
             {
                 MessageBox.Show("tente novamente!");
             }
+        }
+
+        private void timer2_Tick_1(object sender, EventArgs e)
+        {
+            if (concluiutelemetria)
+            {
+                timer3.Enabled = true;
+            }
+            if(concluiufoto)
+            {
+                timer5.Enabled = true;
+            }
+        }
+
+        private void timer3_Tick_1(object sender, EventArgs e)
+        {
+            concluiutelemetria = false;
+            timer3.Enabled = false;
+            Directory.CreateDirectory("telemetria");
+            do
+            {
+                try
+                {
+                    string s = Directory.GetFiles(@"..\..\").First();
+                    s = Path.GetFullPath(s);
+                    s = s.Replace("\\" + Path.GetFileName(s), "");
+                    pathprograma = s;
+
+                    Process p = new Process();
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.FileName = "cmd.exe";
+                    info.RedirectStandardInput = true;
+                    info.UseShellExecute = false;
+                    p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                    p.StartInfo = info;
+                    p.Start();
+                    using (StreamWriter sw = p.StandardInput)
+                    {
+                        if (sw.BaseStream.CanWrite)
+                        {
+                            sw.WriteLine("cd/");
+                            sw.WriteLine($"cd {pathprograma}");
+                            sw.WriteLine($"TXTlogToCSVtool \"{pathtelemetria}\" \"{pathprograma}\\bin\\Debug\\telemetria\\telemetria.csv\"");
+                        }
+                    }
+                    break;
+                }
+                catch (Exception)
+                { }
+            } while (true);
+            do
+            {
+                try
+                {
+                    convertecsv();
+                    break;
+                }
+                catch (Exception)
+                {}
+            } while (true);
+            latitude = rawtelemetrydata.Last().lat;
+            longitude = rawtelemetrydata.Last().log;
+            dronerotacao = rawtelemetrydata.Last().rotacao;
+            concluiutelemetria = true;
+            if (!inicioumapa)
+            {
+                gMapControl1.MapProvider = GMapProviders.GoogleSatelliteMap;
+                gMapControl1.Position = new GMap.NET.PointLatLng(latitude, longitude);
+                gMapControl1.Zoom = 18;
+                inicioumapa = true;
+            }
+            timer1.Enabled = true;
+            //timer4.Enabled = true;
+        }
+
+        private void timer4_Tick(object sender, EventArgs e)
+        {
+            this.TopMost = true;
+            this.TopLevel = true;
+        }
+
+        private void timer5_Tick(object sender, EventArgs e)
+        {
+            concluiufoto = false;
+            timer5.Enabled = false;
+            capture = new VideoCapture(pathvideo);
+            Mat mat = new Mat();
+            capture.Read(mat);
+            imagemvideo = mat.Bitmap;
+            totalframe = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameCount);
+            Mat ma = new Mat();
+            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.PosFrames, totalframe-1);
+            capture.Read(ma);
+            ma.Bitmap.Save($@"imgtemp/img{quantidadepick + 1}.png");
+            quantidadepick++;
+            concluiufoto = true;
+            Process.Start(@"..\..\videospliter\bin\Debug\videospliter.exe");
         }
     }
 }

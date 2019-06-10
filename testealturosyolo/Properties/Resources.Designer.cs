@@ -63,6 +63,16 @@ namespace testealturosyolo.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap aovivoimg {
+            get {
+                object obj = ResourceManager.GetObject("aovivoimg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap imgdronecima {
             get {
                 object obj = ResourceManager.GetObject("imgdronecima", resourceCulture);
