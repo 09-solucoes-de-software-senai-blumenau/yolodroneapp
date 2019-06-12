@@ -25,6 +25,8 @@ using System.Text.RegularExpressions;
 using GMap.NET;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
+using System.Runtime.InteropServices;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace smartvisionaiapp
 {
@@ -99,13 +101,9 @@ namespace smartvisionaiapp
         public Form1()
         {
             InitializeComponent();
-
-            //Process p = Process.GetProcessesByName("smartvisionaiapp").First();
-            //if ( true)
-            //{
-            //    MessageBox.Show("aplicativo já aberto!!");
-            //    Environment.Exit(0);
-            //}
+            // codigo para movimentar tela com style none
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            //----------------
             List<Process> p = Process.GetProcesses().Where(x => x.ProcessName == "videospliter").ToList();
             foreach (var item in p)
             {
@@ -115,8 +113,33 @@ namespace smartvisionaiapp
             {
                 testando = true;
             }
+            
+            
         }
+        //codigo pra movimentar tela
+        private const int cGrip = 16;
+        private const int cCaption = 64; // o tamanho da area que o usuario pode segurar no topo
 
+        protected override void WndProc(ref Message m)
+        {
+            if(m.Msg == 0x84)
+            {
+                Point pos = new Point(m.LParam.ToInt32());
+                pos = this.PointToClient(pos);
+                if(pos.Y < cCaption)
+                {
+                    m.Result = (IntPtr)2;
+                    return;
+                }
+                if(pos.X>= this.ClientSize.Width - cGrip && pos.Y>= this.ClientSize.Height - cGrip)
+                {
+                    m.Result = (IntPtr)17;
+                    return;
+                }
+            }
+            base.WndProc(ref m);
+        }
+        //-----------------
         private void button1_Click(object sender, EventArgs e)
         {
             bool cancelou = false;
@@ -162,17 +185,35 @@ namespace smartvisionaiapp
                 }
                 Directory.Delete("data");
             }
-            if (Directory.Exists("imgtemp"))
+            try
             {
-                string[] s = Directory.GetFiles("imgtemp");
-                if (s.ToList().Count() > 0)
+                if (Directory.Exists("imgtemp"))
                 {
-                    foreach (var item in s.ToList())
+                    string[] s = Directory.GetFiles("imgtemp");
+                    if (s.ToList().Count() > 0)
                     {
-                        File.Delete(item);
+                        foreach (var item in s.ToList())
+                        {
+                            File.Delete(item);
+                        }
                     }
+                    Directory.Delete("imgtemp");
                 }
-                Directory.Delete("imgtemp");
+            }
+            catch (Exception)
+            {
+                if (Directory.Exists("imgtemp"))
+                {
+                    string[] s = Directory.GetFiles("imgtemp");
+                    if (s.ToList().Count() > 0)
+                    {
+                        foreach (var item in s.ToList())
+                        {
+                            File.Delete(item);
+                        }
+                    }
+                    Directory.Delete("imgtemp");
+                }
             }
             Directory.CreateDirectory("imgtemp");
             Directory.CreateDirectory("ger");
@@ -377,7 +418,7 @@ namespace smartvisionaiapp
         {
             
 
-            graphmap = pictureBox3.CreateGraphics();
+            //graphmap = pictureBox3.CreateGraphics();
             calculatamanhoquadrado();
             timer1.Enabled = true;
         }
@@ -433,38 +474,38 @@ namespace smartvisionaiapp
                 {
                     double calculo = (4.144012929E-04 * 100000000) / (b* 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
                     
                 }
                 else if(b<0)
                 {
                     double calculo = (-4.144012929E-04 * 100000000) / (b * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
                     
                 }
                 else if (b == 0)
                 {
-                    droneX = pictureBox3.Width / 2;
+                    //droneX = pictureBox3.Width / 2;
                 }
 
                 if (a > 0)
                 {
                     double calculo = (3.503914119E-04 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
                     
                 }
                 else if (a < 0)
                 {
                     double calculo = (-3.503914119E-04 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
                     
                 }
                 else if (a == 0)
                 {
-                    droneY = pictureBox3.Height / 2;
+                    //droneY = pictureBox3.Height / 2;
                 }
             }
             else if(zoomcalculo == 19)
@@ -474,7 +515,7 @@ namespace smartvisionaiapp
                     double calculo = (8.261203767E-04 * 100000000) / (b * 100000000);
                     double deltacalculo = 1 / calculo;
                     
-                    droneX = (pictureBox3.Width / 2) - (deltacalculo*(pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) - (deltacalculo*(pictureBox3.Width / 2));
                     
                 }
                 else if (b < 0)
@@ -482,12 +523,12 @@ namespace smartvisionaiapp
                     double calculo = (-8.261203767E-04 * 100000000) / (b * 100000000);
                     double deltacalculo = 1 / calculo;
 
-                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
                     
                 }
                 else if (b == 0)
                 {
-                    droneX = pictureBox3.Width / 2;
+                    //droneX = pictureBox3.Width / 2;
                 }
 
 
@@ -496,7 +537,7 @@ namespace smartvisionaiapp
                     double calculo = (6.983899971E-04 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
 
-                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
                     
                 }
                 else if (a < 0)
@@ -504,12 +545,12 @@ namespace smartvisionaiapp
                     double calculo = (-6.983899971E-04 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
 
-                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
                     
                 }
                 else if (a == 0)
                 {
-                    droneY = pictureBox3.Height / 2;
+                   // droneY = pictureBox3.Height / 2;
                 }
             }
             else if (zoomcalculo == 18)
@@ -518,19 +559,19 @@ namespace smartvisionaiapp
                 {
                     double calculo = (1.657605171E-03 * 100000000) / (b * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) - (deltacalculo * (pictureBox3.Width / 2));
                     
                 }
                 else if (b < 0)
                 {
                     double calculo = (-1.657605171E-03 * 100000000) / (b * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
+                    //droneX = (pictureBox3.Width / 2) + (deltacalculo * (pictureBox3.Width / 2));
                    
                 }
                 else if (b == 0)
                 {
-                    droneX = pictureBox3.Width / 2;
+                   // droneX = pictureBox3.Width / 2;
                 }
 
 
@@ -538,19 +579,19 @@ namespace smartvisionaiapp
                 {
                     double calculo = (1.391992254E-03 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) + (deltacalculo * (pictureBox3.Height / 2));
 
                 }
                 else if (a < 0)
                 {
                     double calculo = (-1.391992254E-03 * 100000000) / (a * 100000000);
                     double deltacalculo = 1 / calculo;
-                    droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
+                    //droneY = (pictureBox3.Height / 2) - (deltacalculo * (pictureBox3.Height / 2));
 
                 }
                 else if (a == 0)
                 {
-                    droneY = pictureBox3.Height / 2;
+                   // droneY = pictureBox3.Height / 2;
                 }
             }
         }
@@ -923,6 +964,46 @@ namespace smartvisionaiapp
             else
             {
                 Process.Start(@"videospliter\videospliter.exe");
+            }
+            
+        }
+        bool maximizado = false;
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            if (maximizado)
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btnmaximizar;
+                maximizado = false;
+                this.WindowState = FormWindowState.Normal;
+            }
+            else
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btndesmaximizar;
+                maximizado = true;
+                this.WindowState = FormWindowState.Maximized;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Hide();
+            Close();
+        }
+
+        private void verminmax_Tick(object sender, EventArgs e)
+        {
+            if(this.WindowState == FormWindowState.Maximized)
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btndesmaximizar;
+            }
+            else
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btnmaximizar;
             }
         }
     }

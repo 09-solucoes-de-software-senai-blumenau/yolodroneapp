@@ -118,17 +118,44 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="quadradocamera" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\quadradocamera.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="aovivoimg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aovivoimg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btnmaximizar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btnmaximizar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="splashscreendrone1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\splashscreendrone1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgdronecima" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imgdronecima.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgmapaicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imgmapaicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btnfechar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btnfechar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btndesmaximizar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btndesmaximizar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="splashscreendrone" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\splashscreendrone.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pessoamapa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pessoamapa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btnminimizar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btnminimizar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="LogoProjetoSmartVisionAI" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LogoProjetoSmartVisionAI.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="play" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\play.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgmapaicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\imgmapaicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="pessoamapa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pessoamapa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,16 +163,7 @@
   <data name="imglocotemp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imglocotemp.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="quadradocamera" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\quadradocamera.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgdronecima" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\imgdronecima.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="aovivoimg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\aovivoimg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="splashscreendrone" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\splashscreendrone.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="backmensagem" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\backmensagem.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

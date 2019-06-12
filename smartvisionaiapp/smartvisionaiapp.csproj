@@ -249,6 +249,12 @@
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
     <Content Include="LogoProjetoSmartVisionAI.ico" />
+    <None Include="Resources\backmensagem.png" />
+    <None Include="Resources\splashscreendrone1.png" />
+    <None Include="Resources\btndesmaximizar.png" />
+    <None Include="Resources\btnminimizar.png" />
+    <None Include="Resources\btnmaximizar.png" />
+    <None Include="Resources\btnfechar.png" />
     <None Include="Resources\splashscreendrone.png" />
     <None Include="Resources\aovivoimg.png" />
     <None Include="Resources\pessoamapa.png" />

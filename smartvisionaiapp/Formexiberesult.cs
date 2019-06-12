@@ -30,8 +30,35 @@ namespace smartvisionaiapp
         public Formexiberesult(Form1 f)
         {
             InitializeComponent();
+            // codigo para movimentar tela com style none
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            //----------------
             ff = f;
         }
+        //codigo pra movimentar tela
+        private const int cGrip = 16;
+        private const int cCaption = 64; // o tamanho da area que o usuario pode segurar no topo
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x84)
+            {
+                Point pos = new Point(m.LParam.ToInt32());
+                pos = this.PointToClient(pos);
+                if (pos.Y < cCaption)
+                {
+                    m.Result = (IntPtr)2;
+                    return;
+                }
+                if (pos.X >= this.ClientSize.Width - cGrip && pos.Y >= this.ClientSize.Height - cGrip)
+                {
+                    m.Result = (IntPtr)17;
+                    return;
+                }
+            }
+            base.WndProc(ref m);
+        }
+        //-----------------
         public Formexiberesult(int mode)
         {
             InitializeComponent();
@@ -365,6 +392,45 @@ namespace smartvisionaiapp
         {
             timer2.Enabled = true;
             pausou = false;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Hide();
+            Close();
+        }
+        bool maximizado = false;
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (maximizado)
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btnmaximizar;
+                maximizado = false;
+                this.WindowState = FormWindowState.Normal;
+            }
+            else
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btndesmaximizar;
+                maximizado = true;
+                this.WindowState = FormWindowState.Maximized;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void vermaxmin_Tick(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btndesmaximizar;
+            }
+            else
+            {
+                button4.Image = smartvisionaiapp.Properties.Resources.btnmaximizar;
+            }
         }
     }
 }

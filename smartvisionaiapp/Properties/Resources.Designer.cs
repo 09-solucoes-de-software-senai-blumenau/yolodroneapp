@@ -73,6 +73,56 @@ namespace smartvisionaiapp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap backmensagem {
+            get {
+                object obj = ResourceManager.GetObject("backmensagem", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btndesmaximizar {
+            get {
+                object obj = ResourceManager.GetObject("btndesmaximizar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btnfechar {
+            get {
+                object obj = ResourceManager.GetObject("btnfechar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btnmaximizar {
+            get {
+                object obj = ResourceManager.GetObject("btnmaximizar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btnminimizar {
+            get {
+                object obj = ResourceManager.GetObject("btnminimizar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap imgdronecima {
             get {
                 object obj = ResourceManager.GetObject("imgdronecima", resourceCulture);
@@ -156,6 +206,16 @@ namespace smartvisionaiapp.Properties {
         internal static System.Drawing.Bitmap splashscreendrone {
             get {
                 object obj = ResourceManager.GetObject("splashscreendrone", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap splashscreendrone1 {
+            get {
+                object obj = ResourceManager.GetObject("splashscreendrone1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

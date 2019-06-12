@@ -51,6 +51,7 @@ namespace smartvisionaiapp
                     Process.Start(@"videospliter\videospliter.exe");
                 }
             }
+            TransparencyKey = Color.DimGray;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -83,6 +84,11 @@ namespace smartvisionaiapp
                 new Formexiberesult(ff).Show();
                 Close();
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
