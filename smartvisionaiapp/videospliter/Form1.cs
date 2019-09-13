@@ -1,5 +1,4 @@
-﻿using Alturos.Yolo;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +13,7 @@ namespace videospliter
 {
     public partial class Form1 : Form
     {
+        Analisador ia = new Analisador();
         List<detectado> detectadolist = new List<detectado>();
         private Color corquadrado = Color.Red;
         int idinstancia = 0;
@@ -139,12 +139,7 @@ namespace videospliter
 
             double total = 0;
             Bitmap btm = new Bitmap(pathgeral+$@"\imgtemp\img{idframe}.png");
-            var configurationDetector = new ConfigurationDetector();
-            var config = configurationDetector.Detect();
-
-            using (var yoloWrapper = new YoloWrapper(config))
-            {
-                var items = yoloWrapper.Detect(pathgeral + $@"\imgtemp\img{idframe}.png");
+                List<classificacao> items = ia.analisar(pathgeral + $@"\imgtemp\img{idframe}.png",10,idinstancia);
                 //items[0].Type -> "Person, Car, ..."
                 //items[0].Confidence -> 0.0 (low) -> 1.0 (high)
                 //items[0].X -> bounding box
@@ -153,20 +148,18 @@ namespace videospliter
                 //items[0].Height -> bounding box
                 Pen p = new Pen(Brushes.Red, 20);
 
-                foreach (var item in items.Where(x => x.Type.ToLower() == "person"))
+                foreach (var item in items.Where(x => x.tipo.ToLower() == "pessoa" && x.porcentagem>0.85))
                 {
-
-
-                    total = item.Confidence;
+                    total += item.porcentagem;
                     //desenha quadrado
                     nump++;
                     for (int i2 = 0; i2 < 5; i2++)
                     {
-                        for (int i = 0; i < item.Width; i++)
+                        for (int i = 0; i < item.width; i++)
                         {
                             try
                             {
-                                btm.SetPixel(item.X + i, item.Y + i2, corquadrado);
+                                btm.SetPixel(item.x + i, item.y + i2, corquadrado);
                             }
                             catch (Exception)
                             { }
@@ -174,11 +167,11 @@ namespace videospliter
                     }
                     for (int i2 = 0; i2 < 5; i2++)
                     {
-                        for (int i = 0; i < item.Width + 5; i++)
+                        for (int i = 0; i < item.width + 5; i++)
                         {
                             try
                             {
-                                btm.SetPixel(item.X + i, item.Y + i2 + item.Height, corquadrado);
+                                btm.SetPixel(item.x + i, item.y + i2 + item.height, corquadrado);
                             }
                             catch (Exception)
                             { }
@@ -186,11 +179,11 @@ namespace videospliter
                     }
                     for (int i2 = 0; i2 < 5; i2++)
                     {
-                        for (int i = 0; i < item.Height; i++)
+                        for (int i = 0; i < item.height; i++)
                         {
                             try
                             {
-                                btm.SetPixel(item.X + i2, item.Y + i, corquadrado);
+                                btm.SetPixel(item.x + i2, item.y + i, corquadrado);
                             }
                             catch (Exception)
                             { }
@@ -198,11 +191,11 @@ namespace videospliter
                     }
                     for (int i2 = 0; i2 < 5; i2++)
                     {
-                        for (int i = 0; i < item.Height; i++)
+                        for (int i = 0; i < item.height; i++)
                         {
                             try
                             {
-                                btm.SetPixel(item.X + i2 + item.Width, item.Y + i, corquadrado);
+                                btm.SetPixel(item.x + i2 + item.width, item.y + i, corquadrado);
                             }
                             catch (Exception)
                             { }
@@ -214,9 +207,10 @@ namespace videospliter
                 }
 
 
-            }
+            
             if (nump > 0)
             {
+                total = total / nump;
                 detectado detec = new detectado();
                 detec.confianca = total;
                 detec.quantpessoas = nump;

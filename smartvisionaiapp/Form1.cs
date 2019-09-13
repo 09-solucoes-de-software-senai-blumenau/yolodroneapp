@@ -18,8 +18,6 @@ using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using Microsoft.Office.Interop.Excel;
-using Range = Microsoft.Office.Interop.Excel.Range;
 using Point = System.Drawing.Point;
 using System.Text.RegularExpressions;
 using GMap.NET;
@@ -107,7 +105,12 @@ namespace smartvisionaiapp
             List<Process> p = Process.GetProcesses().Where(x => x.ProcessName == "videospliter").ToList();
             foreach (var item in p)
             {
-                item.Kill();
+                try
+                {
+                    item.Kill();
+                }
+                catch (Exception)
+                { }
             }
             if (File.Exists("emteste.txt"))
             {

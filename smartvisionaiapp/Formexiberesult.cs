@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -63,10 +64,108 @@ namespace smartvisionaiapp
         {
             InitializeComponent();
             timer3.Enabled = true;
-            timer2.Enabled = true;
+            //timer2.Enabled = true;
+            Thread t = new Thread(video);
+            t.Start();
+
             timer1.Enabled = true;
         }
+        void video()
+        {
+            do
+            {
+                baseimg = Directory.GetFiles("imgtemp");
+                if (ind < listaimg.Count())
+                {
+                    if (ff == null)
+                    {
+                        ind = listaimg.Count() - 1;
+                    }
+                    try
+                    {
+                        pictureBox1.Image = listaimg[ind];
+                        int segundos = 0;
+                        int minutos = 0;
+                        if (ind > 60)
+                        {
+                            minutos = Convert.ToInt32(Math.Truncate(Convert.ToDouble(ind) / 60));
+                            segundos = ind - (minutos * 60);
+                        }
+                        else
+                        {
+                            segundos = ind;
+                        }
+                        label2.Text = $"{minutos}:{segundos}";
+                    }
+                    catch (Exception)
+                    { }
+                    //----------
+                    //move barra rep sozinho
+                    int widthbarra = barrarep.Width;
 
+                    if (!arastando)
+                    {
+                        int d = baseimg.Count();
+                        widthbarra = barrarep.Width;
+                        int xinicio = barrarep.Location.X;
+
+                        double porcent = Convert.ToDouble(ind) / Convert.ToDouble(d);
+                        porcent = porcent * widthbarra;
+                        controlerep.Location = new Point(xinicio + Convert.ToInt32(Math.Round(porcent)), controlerep.Location.Y);
+
+                    }
+
+                    //---------------
+
+
+                    int especura = 0;
+                    int dsegundos = baseimg.Count();
+
+                    especura = widthbarra / dsegundos;
+                    foreach (var item in detectadolist.OrderBy(x => x.frame))
+                    {
+                        double porcent = Convert.ToDouble(item.frame) / Convert.ToDouble(dsegundos);
+                        porcent = porcent * widthbarra;
+                        gbarra.FillRectangle(Brushes.Red, (float)(porcent - (especura / 2)), 0, especura, 20);
+                    }
+
+                    if (ind == frameolhando + 2)
+                    {
+                        if (olhandoframe)
+                        {
+                            if (frameolhando > 2)
+                            {
+                                ind = frameolhando - 2;
+                            }
+                        }
+                    }
+
+                    if (ff != null)
+                    {
+                        ff.movedronesegundo(ind);
+                    }
+
+
+                    if (ff != null)
+                    {
+                        ind++;
+                    }
+
+                }
+                else
+                {
+                    ind = 0;
+                    if (olhandoframe)
+                    {
+                        if (frameolhando > 2)
+                        {
+                            ind = frameolhando - 2;
+                        }
+                    }
+                }
+                Thread.Sleep(500);
+            } while (true);
+        }
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             

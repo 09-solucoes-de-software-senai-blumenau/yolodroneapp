@@ -40,17 +40,7 @@ namespace smartvisionaiapp
         private void Formtelaprocessamento_Load(object sender, EventArgs e)
         {
             timer1.Enabled = true;
-            for (int i = 0; i < 31; i++)
-            {
-                if (Form1.testando)
-                {
-                    Process.Start(@"..\..\videospliter\bin\Debug\videospliter.exe");
-                }
-                else
-                {
-                    Process.Start(@"videospliter\videospliter.exe");
-                }
-            }
+            timer2.Enabled = true;
             TransparencyKey = Color.DimGray;
         }
 
@@ -89,6 +79,18 @@ namespace smartvisionaiapp
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Timer2_Tick(object sender, EventArgs e)
+        {
+            if (Form1.testando)
+            {
+                Process.Start(@"..\..\videospliter\bin\Debug\videospliter.exe");
+            }
+            else
+            {
+                Process.Start(@"videospliter\videospliter.exe");
+            }
         }
     }
 }
