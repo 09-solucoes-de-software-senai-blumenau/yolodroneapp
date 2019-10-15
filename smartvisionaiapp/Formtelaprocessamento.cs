@@ -80,16 +80,35 @@ namespace smartvisionaiapp
         {
 
         }
-
+        int a = 0;
         private void Timer2_Tick(object sender, EventArgs e)
         {
-            if (Form1.testando)
+
+            if (a < 2)
             {
-                Process.Start(@"..\..\videospliter\bin\Debug\videospliter.exe");
+                if (Form1.testando)
+                {
+                    string caminho = Path.GetFullPath(@"..\..\videospliter\bin\Debug\videospliter.exe");
+                    ProcessStartInfo ps = new ProcessStartInfo();
+                    ps.FileName = caminho;
+                    ps.WorkingDirectory = Path.GetDirectoryName(caminho);
+                    Process.Start(ps);
+                }
+                else
+                {
+                    string caminho = Path.GetFullPath(@"videospliter\videospliter.exe");
+                    ProcessStartInfo ps = new ProcessStartInfo();
+                    ps.FileName = caminho;
+                    ps.WorkingDirectory = Path.GetDirectoryName(caminho);
+                    Process.Start(ps);
+
+                }
+                a++;
+
             }
             else
             {
-                Process.Start(@"videospliter\videospliter.exe");
+                timer2.Enabled = false;
             }
         }
     }

@@ -67,7 +67,7 @@ namespace videospliter
         {
             if (!File.Exists(pathgeral+@"/aovivo.txt"))
             {
-                int d = Convert.ToInt32(Math.Round(Convert.ToDouble(quantdiv.ToList().Count()) / 30));
+                int d = Convert.ToInt32(Math.Round(Convert.ToDouble(quantdiv.ToList().Count()) / 2));
                 int ultimoindex = -1;
                 int index = idinstancia * d;
                 index++;
@@ -148,11 +148,14 @@ namespace videospliter
                 //items[0].Height -> bounding box
                 Pen p = new Pen(Brushes.Red, 20);
 
-                foreach (var item in items.Where(x => x.tipo.ToLower() == "pessoa" && x.porcentagem>0.85))
+                foreach (var item in items.Where(x => x.tipo.ToLower() == "pessoa" && x.porcentagem>0.87))
                 {
                     total += item.porcentagem;
                     //desenha quadrado
                     nump++;
+                    Graphics g = Graphics.FromImage(btm);
+                    g.FillRectangle(Brushes.Red, item.x, item.y - 24, 100, 25);
+                    g.DrawString(item.tipo.ToUpper(), new Font(FontFamily.GenericSansSerif, 12), Brushes.White, item.x + 5, item.y - 22);
                     for (int i2 = 0; i2 < 5; i2++)
                     {
                         for (int i = 0; i < item.width; i++)

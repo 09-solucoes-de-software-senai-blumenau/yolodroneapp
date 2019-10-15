@@ -16,6 +16,8 @@ namespace videospliter
 {
     public class Analisador
     {
+        int whidthoriginal = 0;
+        int heightoriginal = 0;
         static readonly string _assetsPath = Path.Combine(Environment.CurrentDirectory, "assets");
         static readonly string _trainTagsTsv = Path.Combine(_assetsPath, "inputs-train", "data", "tags.tsv");
         static readonly string _predictImageListTsv = Path.Combine(_assetsPath, "inputs-predict", "data", "image_list.tsv");
@@ -114,6 +116,8 @@ namespace videospliter
         public List<classificacao> analisar(string path, int deltacor,int instancia)
         {
             List<classificacao> listaclassific = new List<classificacao>();
+            whidthoriginal = new Bitmap(path).Width;
+            heightoriginal = new Bitmap(path).Height;
             Bitmap bitmap = new Bitmap(new Bitmap(path), 250, 250);
             List<Point> listap = new List<Point>();
             //int deltanominal = 10;
@@ -240,10 +244,12 @@ namespace videospliter
                             }
                             bitb.Save($"imagensgrid{instancia}/imgdetect{n}.png");
                             classificacao c = new classificacao();
-                            c.x = ltb.ponto.X;
-                            c.y = ltb.ponto.Y;
-                            c.width = rbb.ponto.X - ltb.ponto.X;
-                            c.height = rbb.ponto.Y - ltb.ponto.Y;
+                            double mx = (double)whidthoriginal / (double)250;
+                            double my = (double)heightoriginal / (double)250;
+                            c.x = Convert.ToInt32(Math.Round((double)ltb.ponto.X * mx));
+                            c.y = Convert.ToInt32(Math.Round((double)ltb.ponto.Y * my));
+                            c.width = Convert.ToInt32(Math.Round((double)(rbb.ponto.X - ltb.ponto.X) * mx));
+                            c.height = Convert.ToInt32(Math.Round((double)(rbb.ponto.Y - ltb.ponto.Y) * my));
                             c.path = $"imagensgrid{instancia}/imgdetect{n}.png";
                             listaclassific.Add(c);
                             n++;

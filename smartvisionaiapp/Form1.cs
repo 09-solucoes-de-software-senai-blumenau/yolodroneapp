@@ -41,7 +41,7 @@ namespace smartvisionaiapp
         double miliseconds = 0;
         Bitmap img = null;
 
-
+        bool jaanalisado = false;
         //---
 
         
@@ -142,10 +142,12 @@ namespace smartvisionaiapp
             }
             base.WndProc(ref m);
         }
+
         //-----------------
         private void button1_Click(object sender, EventArgs e)
         {
             bool cancelou = false;
+            jaanalisado = false;
             if (Directory.Exists("ger"))
             {
                 string[] s = Directory.GetFiles("ger");
@@ -262,6 +264,12 @@ namespace smartvisionaiapp
                 Directory.CreateDirectory("telemetria");
                 try
                 {
+                    try
+                    {
+                        File.Delete($"{pathprograma}\\bin\\Debug\\telemetria\\telemetria.csv");
+                    }
+                    catch (Exception)
+                    {}
                     Process p = new Process();
                     ProcessStartInfo info = new ProcessStartInfo();
                     info.FileName = "cmd.exe";
@@ -297,8 +305,8 @@ namespace smartvisionaiapp
                 if (of.ShowDialog() == DialogResult.OK)
                 {
 
-                    convertecsv();
 
+                    convertecsv();
 
                     Directory.CreateDirectory("imgtemp");
                     Directory.CreateDirectory("ger");
@@ -345,7 +353,7 @@ namespace smartvisionaiapp
                             ma.Bitmap.Save($@"imgtemp/img{quantidadepick + 1}.png");
                             quantidadepick++;
                         }
-
+                        
                         new Formtelaprocessamento(listaframes, fps, quantidadepick, corquadrado, this).ShowDialog();
 
 
@@ -361,7 +369,7 @@ namespace smartvisionaiapp
             if (!inicioumapa)
             {
                 gMapControl1.MapProvider = GMapProviders.GoogleSatelliteMap;
-                gMapControl1.Position = new GMap.NET.PointLatLng(latitude, longitude);
+                gMapControl1.Position = new GMap.NET.PointLatLng(rawtelemetrydata[0].lat, rawtelemetrydata[0].log);
                 gMapControl1.Zoom = 18;
                 inicioumapa = true;
             }
@@ -660,8 +668,8 @@ namespace smartvisionaiapp
             catch (Exception)
             { }
             convertecsv();
-
-            new Formexiberesult(this).Show();
+            jaanalisado = true;
+            
         }
 
         void convertecsv()
@@ -681,43 +689,7 @@ namespace smartvisionaiapp
             s = s.Replace("\\" + Path.GetFileName(s), "");
             pathprograma = s;
 
-            DateTime tempoinicio = new DateTime();
-            bool first = true;
-            string todotexto ="";
-            if (testando)
-            {
-                todotexto = File.ReadAllText($@"{pathprograma}\bin\Debug\telemetria\telemetria.csv");
-            }
-            else
-            {
-                todotexto = File.ReadAllText($@"{pathprograma}\telemetria.csv");
-            }
-            Match m = Regex.Match(todotexto, $"({DateTime.Now.Year})\\/(\\d+)\\/(\\d+)\\s?(\\d+):(\\d+):([0-9\\.]+),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*),([\\-0-9\\/\\s:\\.a-zA-Z_]*),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*)", RegexOptions.Multiline);
-            do
-            {
-                objtelemetria ov = new objtelemetria();
-                ov.lat = Convert.ToDouble(m.Groups[7].Value.Replace('.', ','));
-                ov.log = Convert.ToDouble(m.Groups[8].Value.Replace('.', ','));
-                ov.date = new DateTime(Convert.ToInt32(m.Groups[1].Value), Convert.ToInt32(m.Groups[2].Value), Convert.ToInt32(m.Groups[3].Value), Convert.ToInt32(m.Groups[4].Value), Convert.ToInt32(m.Groups[5].Value), Convert.ToInt32(Math.Truncate(Convert.ToDouble(m.Groups[6].Value.Replace('.', ',')))));
-                if (first)
-                {
-                    ov.deltasegundos = 0;
-                    tempoinicio = ov.date;
-                    first = false;
-                }
-                else
-                {
-                    TimeSpan ts = ov.date - tempoinicio;
-                    ov.deltasegundos = Convert.ToInt32(Math.Truncate(ts.TotalSeconds));
-                }
-                string tyaw = m.Groups[9].Value.Replace('.', ',');
-                double rot = Convert.ToDouble(tyaw);
-                rot = rot * -1;
-                ov.rotacao = rot;
-                rawtelemetrydata.Add(ov);
-                m = m.NextMatch();
-
-            } while (m.Success);
+            timer4.Enabled = true;
 
 
             //if (rawtelemetrydata.Count() > 0)
@@ -1007,6 +979,66 @@ namespace smartvisionaiapp
             else
             {
                 button4.Image = smartvisionaiapp.Properties.Resources.btnmaximizar;
+            }
+        }
+
+        private void Timer4_Tick_1(object sender, EventArgs e)
+        {
+            timer4.Enabled = false;
+            DateTime tempoinicio = new DateTime();
+            bool first = true;
+            string todotexto = "";
+            if (testando)
+            {
+                todotexto = File.ReadAllText($@"{pathprograma}\bin\Debug\telemetria\telemetria.csv");
+            }
+            else
+            {
+                todotexto = File.ReadAllText($@"{pathprograma}\telemetria.csv");
+            }
+            //Match m = Regex.Match(todotexto, $"({DateTime.Now.Year})\\/(\\d+)\\/(\\d+)\\s?(\\d+):(\\d+):([0-9\\.]+),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*),([\\-0-9\\/\\s:\\.a-zA-Z_]*),[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,[\\-0-9\\/\\s:\\.a-zA-Z_]*,([\\-0-9\\/\\s:\\.a-zA-Z_]*)", RegexOptions.Multiline);
+            string[] ls = todotexto.Split(Convert.ToChar("\r"));
+            int atual = 1;
+            do
+            {//21
+                string[] ls2 = ls[atual].Split(',');
+                if (ls2.Length > 3)
+                {
+                    objtelemetria ov = new objtelemetria();
+                    ov.lat = Convert.ToDouble(ls2[12].Replace('.', ','));
+                    ov.log = Convert.ToDouble(ls2[13].Replace('.', ','));
+                    ov.date = DateTime.Parse(ls2[0].Remove(0, 2));
+                    if (first)
+                    {
+                        ov.deltasegundos = 0;
+                        tempoinicio = ov.date;
+                        first = false;
+                    }
+                    else
+                    {
+                        TimeSpan ts = ov.date - tempoinicio;
+                        ov.deltasegundos = Convert.ToInt32(Math.Truncate(ts.TotalSeconds));
+                    }
+                    string tyaw = ls2[21];
+                    double rot;
+                    try
+                    {
+                        rot = Convert.ToDouble(tyaw);
+                    }
+                    catch (Exception)
+                    {
+                        rot = 0;
+                    }
+                    rot = rot * -1;
+                    ov.rotacao = rot;
+                    rawtelemetrydata.Add(ov);
+                    //m = m.NextMatch();
+                }
+                atual++;
+            } while (atual<ls.Length);
+            if (jaanalisado)
+            {
+                new Formexiberesult(this).Show();
             }
         }
     }
